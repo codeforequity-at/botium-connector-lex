@@ -49,7 +49,7 @@ class BotiumConnectorLex {
     return Promise.resolve()
   }
 
-  UserSays ({messageText}) {
+  UserSays ({ messageText }) {
     debug('UserSays called')
 
     const params = {
@@ -76,7 +76,7 @@ class BotiumConnectorLex {
                 name: data.intentName
               },
               entities: data.slots
-                ? Object.entries(data.slots).filter(([name, value]) => value != null).map(([name, value]) => { return {name, value} })
+                ? Object.entries(data.slots).filter(([name, value]) => value != null).map(([name, value]) => { return { name, value } })
                 : []
             },
             sourceData: data
