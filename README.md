@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/botium-connector-google-assistant.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/botium-connector-lex/)
 
-[ ![Codeship Status for codeforequity-at/botium-connector-lex](https://app.codeship.com/projects/f379ece0-ee76-0136-6e85-5afc45d94643/status?branch=master)](https://app.codeship.com/projects/320125)
+[![Codeship Status for codeforequity-at/botium-connector-lex](https://app.codeship.com/projects/c947b780-0daa-0137-4acf-3a9e8715cbf8/status?branch=master)](https://app.codeship.com/projects/326745)
 [![npm version](https://badge.fury.io/js/botium-connector-lex.svg)](https://badge.fury.io/js/botium-connector-lex)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
@@ -11,6 +11,7 @@ This is a [Botium](https://github.com/codeforequity-at/botium-core) connector fo
 __Did you read the [Botium in a Nutshell](https://medium.com/@floriantreml/botium-in-a-nutshell-part-1-overview-f8d0ceaf8fb4) articles? Be warned, without prior knowledge of Botium you won't be able to properly use this library!__
 
 ## How it works
+Botium connects to the [Amazon Lex API](https://docs.aws.amazon.com/de_de/lex/latest/dg/API_Reference.html).
 
 It can be used as any other Botium connector with all Botium Stack components:
 * [Botium CLI](https://github.com/codeforequity-at/botium-cli/)
