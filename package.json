@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "aws-sdk": "^2.382.0",
-    "debug": "^3.1.0",
-    "lodash": "^4.17.10"
+    "debug": "^3.1.0"
   }
 }
