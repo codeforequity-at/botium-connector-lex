@@ -66,4 +66,5 @@ typings/
 dist
 
 package-lock.json
-/samples/BookTrip/botium.json
+botium.local.json
+yarn.lock

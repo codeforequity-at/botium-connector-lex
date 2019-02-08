@@ -20,12 +20,39 @@ It can be used as any other Botium connector with all Botium Stack components:
 
 This connector processes info about NLP. So Intent/Entity asserters can be used. (Does not returns confidences, and alternative intents)
 
-## Prerequisites
+## Requirements
+* **Node.js and NPM**
+* a **published Lex bot**, and user account with administrative rights
+* a **project directory** on your workstation to hold test cases and Botium configuration
 
-### Published Lex bot.
-* Note the alias (Where it is published to)
+## Install Botium and Amazon Lex Connector
 
-### An IAM user is requred to access te API.
+When using __Botium CLI__:
+
+```
+> npm install -g botium-cli
+> npm install -g botium-connector-lex
+> botium-cli init
+> botium-cli run
+```
+
+When using __Botium Bindings__:
+
+```
+> npm install -g botium-bindings
+> npm install -g botium-connector-lex
+> botium-bindings init mocha
+> npm install && npm run mocha
+```
+
+When using __Botium Box__:
+
+_Already integrated into Botium Box, no setup required_
+
+## Connecting Amazon Lex to Botium
+
+You have to create an **IAM user** to enable Botium to access the Amazon Lex API.
+
 * [Create an IAM user](https://console.aws.amazon.com/iam/) (see [here](https://docs.aws.amazon.com/de_de/IAM/latest/UserGuide/id_users_create.html) for help)
   * Important: choose _Programmatic access_ as access type
   * Note access key and secret, you need it later
@@ -33,18 +60,13 @@ This connector processes info about NLP. So Intent/Entity asserters can be used.
   * Feel free to use finer grained policies if you know what you are doing, 
   or read [Authentication and Access Control for Amazon Lex](https://docs.aws.amazon.com/lex/latest/dg/auth-and-access-control.html)
     
-## How to use
-
-### Create your testcases
-
-### Create botium.json
-
 Create a botium.json with 
 * Amazon region where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
 * access key and secret of IAM user,
 * name of the bot
-* alias (see publishing) 
-```javascript
+* alias of the bot (see publishing)
+
+```
 {
   "botium": {
     "Capabilities": {
@@ -60,30 +82,35 @@ Create a botium.json with
 }
 ```
 
-### Run your testcases
+To check the configuration, run the emulator (Botium CLI required) to bring up a chat interface in your terminal window:
 
-It depending how you want to run them:
-* [Botium CLI](https://github.com/codeforequity-at/botium-cli/)
-* [Botium Bindings](https://github.com/codeforequity-at/botium-bindings/)
-* [Botium Box](https://www.botium.at)
+```
+> botium-cli emulator
+```
+
+Botium setup is ready, you can begin to write your [BotiumScript](https://github.com/codeforequity-at/botium-core/wiki/Botium-Scripting) files.
 
 ## How to start sample
 
 There is a small demo in [samples/BookTrip dir](./samples/BookTrip) with Botium Bindings.  This tests the BookTrip template of Amazon Lex. 
 To start it you have to 
 
-* Create a bot from the template
+* Create and publish a bot from the template
   * Go to [console](https://console.aws.amazon.com/lex/home)
-  * Choose region (top right) and note it, you need it later
-  * Click create
-  * Choose BookTrip
-  * Choose a name and note it, you need it later
+  * Choose **region** (top right) and note it, you need it later
+  * Click _Create_
+  * Choose _BookTrip_
+  * Choose a **name** and note it, you need it later
   * Accept COPPA
-  * Click create
-* Create botium.json
-* Run it
-  * cd ./samples/BookTrip
-  * npm run test
+  * Click _Create_ to create the Lex project
+  * Now click _Publish_ and select an **alias**
+* Adapt botium.json in the sample directory
+* Run the sample
+
+```
+> cd ./samples/BookTrip
+> npm install && npm test
+```
 
 ## Supported Capabilities
 
@@ -96,7 +123,9 @@ See Amazon IAM user
 See Amazon IAM user
 
 ### LEX_REGION
-Amazon region where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
+Amazon region code where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex).
+
+_Hint: a list of region codes is available [here](https://docs.aws.amazon.com/de_de/general/latest/gr/rande.html)_
 
 ### LEX_PROJECT_NAME
 The name of the bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
