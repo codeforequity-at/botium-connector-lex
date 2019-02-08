@@ -69,7 +69,7 @@ It depending how you want to run them:
 ## How to start sample
 
 There is a small demo in [samples/BookTrip dir](./samples/BookTrip) with Botium Bindings.  This tests the BookTrip template of Amazon Lex. 
-So to start it you have to 
+To start it you have to 
 
 * Create a bot from the template
   * Go to [console](https://console.aws.amazon.com/lex/home)

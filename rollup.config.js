@@ -6,12 +6,12 @@ export default {
   input: 'index.js',
   output: [
     {
-      file: 'dist/botium-connector-dialogflow-es.js',
+      file: 'dist/botium-connector-lex-es.js',
       format: 'es',
       sourcemap: true
     },
     {
-      file: 'dist/botium-connector-dialogflow-cjs.js',
+      file: 'dist/botium-connector-lex-cjs.js',
       format: 'cjs',
       sourcemap: true
     }
