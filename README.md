@@ -1,6 +1,6 @@
 # Botium Connector for Amazon Lex
 
-[![NPM](https://nodei.co/npm/botium-connector-google-assistant.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/botium-connector-lex/)
+[![NPM](https://nodei.co/npm/botium-connector-lex.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/botium-connector-lex/)
 
 [![Codeship Status for codeforequity-at/botium-connector-lex](https://app.codeship.com/projects/c947b780-0daa-0137-4acf-3a9e8715cbf8/status?branch=master)](https://app.codeship.com/projects/326745)
 [![npm version](https://badge.fury.io/js/botium-connector-lex.svg)](https://badge.fury.io/js/botium-connector-lex)
