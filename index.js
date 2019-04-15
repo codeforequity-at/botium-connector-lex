@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const debug = require('debug')('botium-connector-alexa-avs-main')
+const debug = require('debug')('botium-connector-lex')
 const util = require('util')
 
 const Capabilities = {
