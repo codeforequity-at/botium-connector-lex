@@ -7,7 +7,8 @@ const Capabilities = {
   LEX_ACCESS_KEY_ID: 'LEX_ACCESS_KEY_ID',
   LEX_SECRET_ACCESS_KEY: 'LEX_SECRET_ACCESS_KEY',
   LEX_PROJECT_NAME: 'LEX_PROJECT_NAME',
-  LEX_PROJECT_ALIAS: 'LEX_PROJECT_ALIAS'
+  LEX_PROJECT_ALIAS: 'LEX_PROJECT_ALIAS',
+  LEX_SESSION_ATTRIBUTES: 'LEX_SESSION_ATTRIBUTES'
 }
 
 class BotiumConnectorLex {
@@ -44,18 +45,35 @@ class BotiumConnectorLex {
     debug('Start called')
 
     this.lexUserId = 'chatbot-demo' + Date.now()
-    this.sessionAttributes = {}
+    const fromCaps = this.caps[Capabilities.LEX_SESSION_ATTRIBUTES]
+    if (fromCaps) {
+      if (typeof fromCaps === 'string') {
+        try {
+          this.sessionAttributes = JSON.parse(fromCaps)
+        } catch (ex) {
+          throw new Error('The type LEX_SESSION_ATTRIBUTES capability is invalid. Cant be converted to JSON')
+        }
+      } else {
+        this.sessionAttributes = fromCaps
+      }
+
+      if (typeof this.sessionAttributes !== 'object') {
+        throw new Error('The type LEX_SESSION_ATTRIBUTES capability is invalid. It must be object, or an object as string')
+      }
+    } else {
+      this.sessionAttributes = {}
+    }
 
     return Promise.resolve()
   }
 
-  UserSays ({ messageText }) {
+  UserSays (msg) {
     debug('UserSays called')
 
     const params = {
       botName: this.caps[Capabilities.LEX_PROJECT_NAME],
       botAlias: this.caps[Capabilities.LEX_PROJECT_ALIAS],
-      inputText: messageText,
+      inputText: msg.messageText,
       userId: this.lexUserId,
       sessionAttributes: this.sessionAttributes
     }
