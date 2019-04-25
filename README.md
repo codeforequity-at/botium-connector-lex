@@ -132,3 +132,9 @@ The name of the bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex
 
 ### LEX_PROJECT_ALIAS
 The alias of the bot. (see publishing)
+
+### LEX_SESSION_ATTRIBUTES
+_Optional_.
+
+Initial session attributes. It must be object, or object as string. Lex supports just string attributes. 
+(otherwise retrurns error like "error sending to bot Error: Lex answered with error { InvalidParameterType: Expected params.sessionAttributes['somenumber'] to be a string")
