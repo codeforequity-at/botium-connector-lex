@@ -70,9 +70,9 @@ const extractIntentUtterances = async ({ caps }) => {
           if (slotTypeValues[`${slot.slotType}`]) {
             result = [...result, ...slotTypeValues[`${slot.slotType}`].map(e => utterance.replace(slotMatch, e))]
           } else if (slot.slotType === 'AMAZON.NUMBER') {
-            result = [...result, utterance.replace(slotMatch, randomize('A', 1))]
+            result = [...result, utterance.replace(slotMatch, 'X')]
           } else {
-            result = [...result, utterance.replace(slotMatch, randomize('Aa', 5))]
+            result = [...result, utterance.replace(slotMatch, randomize('A', 5))]
           }
         } else {
           result = [...result, utterance]
@@ -103,7 +103,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   })
 
   const newBotData = {
-    name: `${origBot ? origBot.name : 'Botium'}BotiumCopy${randomize('Aa', 5)}`,
+    name: `${origBot ? origBot.name : 'Botium'}TrainingCopy${randomize('Aa', 5)}`,
     childDirected: origBot ? origBot.childDirected : true,
     locale: origBot ? origBot.locale : 'en-US',
     voiceId: '',
@@ -120,7 +120,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   const trainedIntents = []
 
   for (const intent of intents || []) {
-    const newIntentName = `${intent.intentName}Botium${randomize('Aa', 5)}`
+    const newIntentName = `${intent.intentName.replace(/[^A-Za-z]/gi, '')}Botium${randomize('Aa', 5)}`
     while (true) {
       try {
         const newIntent = await client.putIntent({
@@ -128,7 +128,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
           fulfillmentActivity: {
             type: 'ReturnIntent'
           },
-          sampleUtterances: intent.utterances,
+          sampleUtterances: intent.utterances.map(u => u.replace(/[^\w\s]/gi, '').replace(/[0-9]/gi, 'X')),
           slots: []
         }).promise()
         debug(`Lex Intent created: ${newIntent.name}`)
@@ -184,6 +184,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
     }).promise()
     debug(`Lex Bot Status received: ${newBotStatus.status}`)
     if (newBotStatus.status === 'READY') break
+    if (newBotStatus.status === 'FAILED') throw new Error(`Lex Bot Status is FAILED`)
     await timeout(2000)
   }
 
@@ -199,7 +200,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   }
 }
 
-const cleanupIntentUtterances = async ({ caps }, { caps: trainCaps, origBot, tempBot, tempBotAlias }) => {
+const cleanupIntentUtterances = async ({ caps }, { caps: trainCaps, tempBot, tempBotAlias }) => {
   const driver = new botium.BotDriver(getCaps(Object.assign(caps || {}, trainCaps || {})))
 
   const client = new AWS.LexModelBuildingService({
