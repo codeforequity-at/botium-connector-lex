@@ -33,6 +33,10 @@
   },
   "dependencies": {
     "aws-sdk": "^2.382.0",
-    "debug": "^3.1.0"
+    "debug": "^3.1.0",
+    "randomatic": "^3.1.1"
+  },
+  "peerDependencies": {
+    "botium-core": "^1.7.3"
   }
 }
