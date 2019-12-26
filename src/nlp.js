@@ -129,7 +129,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
           fulfillmentActivity: {
             type: 'ReturnIntent'
           },
-          sampleUtterances: _.uniq(intent.utterances.map(u => u.replace(/[^\w\s]/gi, '').replace(/[0-9]/gi, 'X').toLowerCase())),
+          sampleUtterances: _.uniq(intent.utterances.map(u => u.replace(/[^\w\s]/gi, '').replace(/[0-9]/gi, 'X').toLowerCase()).filter(u => u && u.length > 0)),
           slots: []
         }).promise()
         debug(`Lex Intent created: ${newIntent.name}`)
