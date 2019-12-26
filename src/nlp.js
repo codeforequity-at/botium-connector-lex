@@ -1,4 +1,5 @@
 const path = require('path')
+const _ = require('lodash')
 const AWS = require('aws-sdk')
 const randomize = require('randomatic')
 const botium = require('botium-core')
@@ -128,7 +129,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
           fulfillmentActivity: {
             type: 'ReturnIntent'
           },
-          sampleUtterances: intent.utterances.map(u => u.replace(/[^\w\s]/gi, '').replace(/[0-9]/gi, 'X')),
+          sampleUtterances: _.uniq(intent.utterances.map(u => u.replace(/[^\w\s]/gi, '').replace(/[0-9]/gi, 'X').toLowerCase())),
           slots: []
         }).promise()
         debug(`Lex Intent created: ${newIntent.name}`)
@@ -184,7 +185,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
     }).promise()
     debug(`Lex Bot Status received: ${newBotStatus.status}`)
     if (newBotStatus.status === 'READY') break
-    if (newBotStatus.status === 'FAILED') throw new Error(`Lex Bot Status is FAILED`)
+    if (newBotStatus.status === 'FAILED') throw new Error('Lex Bot Status is FAILED')
     await timeout(2000)
   }
 
