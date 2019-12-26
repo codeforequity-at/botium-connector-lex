@@ -3,11 +3,11 @@
     "Capabilities": {
       "PROJECTNAME": "Botium Project Lex",
       "CONTAINERMODE": "lex",
-      "LEX_REGION": "us-east-1",
-      "LEX_ACCESS_KEY_ID": "AKIAJEQYYCPGCF5DNYUA",
-      "LEX_SECRET_ACCESS_KEY": "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",
-      "LEX_PROJECT_NAME": "BookTrip",
-      "LEX_PROJECT_ALIAS": "beta",
+      "LEX_REGION": "...",
+      "LEX_ACCESS_KEY_ID": "...",
+      "LEX_SECRET_ACCESS_KEY": "...",
+      "LEX_PROJECT_NAME": "...",
+      "LEX_PROJECT_ALIAS": "...",
       "LEX_SESSION_ATTRIBUTES": {"aa": "aa"}
     }
   }
