@@ -1,3 +1,4 @@
+const randomize = require('randomatic')
 const AWS = require('aws-sdk')
 const debug = require('debug')('botium-connector-lex')
 const util = require('util')
@@ -44,7 +45,7 @@ class BotiumConnectorLex {
   Start () {
     debug('Start called')
 
-    this.lexUserId = 'chatbot-demo' + Date.now()
+    this.lexUserId = 'chatbot-demo-' + randomize('Aa', 5)
     const fromCaps = this.caps[Capabilities.LEX_SESSION_ATTRIBUTES]
     if (fromCaps) {
       if (typeof fromCaps === 'string') {
