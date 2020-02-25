@@ -4,6 +4,9 @@
   "description": "Botium Connector for Amazon Lex",
   "main": "dist/botium-connector-lex-cjs.js",
   "module": "dist/botium-connector-lex-es.js",
+  "bin": {
+    "botium-connector-lex-cli": "./bin/cli.js"
+  },
   "scripts": {
     "build": "npm run eslint && rollup -c",
     "eslint": "eslint index.js src/** bin/**",

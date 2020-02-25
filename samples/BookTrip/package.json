@@ -2,7 +2,8 @@
   "name": "book-trip",
   "version": "1.0.0",
   "scripts": {
-    "test": "mocha spec"
+    "test": "mocha spec",
+    "import": "botium-connector-lex-cli import --buildconvos --output spec/convo"
   },
   "botium": {
     "convodirs": [
