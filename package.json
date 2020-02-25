@@ -6,7 +6,8 @@
   "module": "dist/botium-connector-lex-es.js",
   "scripts": {
     "build": "npm run eslint && rollup -c",
-    "eslint": "eslint index.js"
+    "eslint": "eslint index.js src/** bin/**",
+    "eslint-fix": "eslint --fix index.js src/** bin/**"
   },
   "repository": {
     "type": "git",
@@ -40,7 +41,10 @@
     "aws-sdk": "^2.580.0",
     "debug": "^4.1.1",
     "lodash": "^4.17.15",
-    "randomatic": "^3.1.1"
+    "mkdirp": "^1.0.3",
+    "randomatic": "^3.1.1",
+    "slug": "^2.1.1",
+    "yargs": "^15.1.0"
   },
   "peerDependencies": {
     "botium-core": "^1.7.3"
