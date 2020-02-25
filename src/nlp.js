@@ -5,6 +5,8 @@ const randomize = require('randomatic')
 const botium = require('botium-core')
 const debug = require('debug')('botium-connector-lex-nlp')
 
+const { loadSlotTypes, expandSlotType } = require('./slottypes')
+
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const getCaps = (caps) => {
@@ -35,16 +37,19 @@ const extractIntentUtterances = async ({ caps }) => {
     secretAccessKey: driver.caps.LEX_SECRET_ACCESS_KEY
   })
 
+  const builtinSlotTypes = await loadSlotTypes('en-us')
+  debug(`Loaded ${Object.keys(builtinSlotTypes).length} built-in slot types`)
+
   const slotTypesShort = await paginatedCall(client.getSlotTypes.bind(client), d => d.slotTypes, {})
 
-  const slotTypeValues = {}
+  const customSlotTypes = {}
   for (const slotTypeShort of slotTypesShort) {
     const st = await client.getSlotType({
       name: slotTypeShort.name,
       version: '$LATEST'
     }).promise()
     if (st.enumerationValues && st.enumerationValues.length > 0) {
-      slotTypeValues[`${st.name}`] = st.enumerationValues.map(e => e.value)
+      customSlotTypes[`${st.name}`] = st.enumerationValues.map(e => e.value)
     }
   }
 
@@ -68,12 +73,10 @@ const extractIntentUtterances = async ({ caps }) => {
 
       utterances = utterances.reduce((result, utterance) => {
         if (utterance.indexOf(slotMatch) > 0) {
-          if (slotTypeValues[`${slot.slotType}`]) {
-            result = [...result, ...slotTypeValues[`${slot.slotType}`].map(e => utterance.replace(slotMatch, e))]
-          } else if (slot.slotType === 'AMAZON.NUMBER') {
-            result = [...result, utterance.replace(slotMatch, 'X')]
-          } else {
-            result = [...result, utterance.replace(slotMatch, randomize('A', 5))]
+          if (customSlotTypes[slot.slotType]) {
+            result = [...result, ...expandSlotType(utterance, slot.name, customSlotTypes[slot.slotType])]
+          } else if (builtinSlotTypes[slot.slotType]) {
+            result = [...result, ...expandSlotType(utterance, slot.name, builtinSlotTypes[slot.slotType])]
           }
         } else {
           result = [...result, utterance]

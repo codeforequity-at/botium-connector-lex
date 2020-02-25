@@ -1,0 +1,101 @@
+{
+  "en": {
+    "AMAZON.DATE": [
+      "today",
+      "tomorrow",
+      "next week",
+      "next month",
+      "next year",
+      "september",
+      "july fifth",
+      "november twenty-fifth",
+      "next monday"
+    ],
+    "AMAZON.DURATION": [
+      "ten minutes",
+      "five hours",
+      "three days",
+      "eight weeks",
+      "seven years"
+    ],
+    "AMAZON.FOUR_DIGIT_NUMBER": [
+      "six oh four five",
+      "six zero four five",
+      "six oh forty five",
+      "sixty forty five",
+      "six thousand forty five"
+    ],
+    "AMAZON.NUMBER": [
+      "three",
+      "ten",
+      "fifty five",
+      "one oh four",
+      "one hundred four",
+      "one hundred and four",
+      "five thousand two hundred and thirty five",
+      "nine eight zero three four"
+    ],
+    "AMAZON.Ordinal": [
+      "third",
+      "tenth",
+      "first",
+      "fifteenth"
+    ],
+    "AMAZON.PhoneNumber": [
+      "plus one five zero nine five five five one two one two",
+      "one five zero nine five five five one two one two",
+      "five zero nine five five five one two one two",
+      "five five five one two one two"
+    ],
+    "AMAZON.TIME": [
+      "noon",
+      "midnight",
+      "six",
+      "four twenty three in the morning",
+      "five am",
+      "one thirty in the afternoon",
+      "two fifteen pm",
+      "eleven fifty nine at night",
+      "this morning",
+      "now"
+    ]
+  },
+  "de": {
+    "AMAZON.DATE": [
+      "heute",
+      "morgen",
+      "nächste woche",
+      "nächsten monat",
+      "nächstes jahr"
+    ],
+    "AMAZON.DURATION": [
+      "zehn minuten",
+      "fünf stunden"
+    ],
+    "AMAZON.FOUR_DIGIT_NUMBER": [
+      "sechs null vier fünf",
+      "sechs vierzig fünf",
+      "sechstausend fünfundvierzig"
+    ],
+    "AMAZON.NUMBER": [
+      "drei",
+      "fünfundfünfzig",
+      "hundertvier",
+      "hundertundvier"
+    ],
+    "AMAZON.Ordinal": [
+      "dritter",
+      "zehnter",
+      "erster"
+    ],
+    "AMAZON.PhoneNumber": [
+      "null sechs sieben sechs drei drei zwei drei sieben vier eins"
+    ],
+    "AMAZON.TIME": [
+      "mitternacht",
+      "um sechs",
+      "neun am morgen",
+      "jetzt"
+    ]
+  }  
+}

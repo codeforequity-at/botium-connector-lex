@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "test": "mocha spec",
-    "import": "botium-connector-lex-cli import --buildconvos --output spec/convo"
+    "import": "botium-connector-lex-cli import --buildconvos --output spec/imported"
   },
   "botium": {
     "convodirs": [
