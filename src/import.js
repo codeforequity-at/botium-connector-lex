@@ -132,6 +132,11 @@ const importIntents = async ({ caps, buildconvos, buildentities }) => {
         ]
       }
       convos.push(convo)
+    } else {
+      utterances.push({
+        name: intent.intentName,
+        utterances: Object.keys(userExamples).reduce((all, k) => all.concat(userExamples[k]), [])
+      })
     }
   }
 
