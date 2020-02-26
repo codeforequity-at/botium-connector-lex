@@ -1,0 +1,20 @@
+{
+  "name": "order-flowers",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "mocha spec",
+    "import": "botium-connector-lex-cli import --buildconvos --buildentities --output spec/imported"
+  },
+  "botium": {
+    "convodirs": [
+      "spec\\convo"
+    ],
+    "expandConvos": true,
+    "expandUtterancesToConvos": false
+  },
+  "devDependencies": {
+    "mocha": "latest",
+    "botium-bindings": "latest",
+    "botium-connector-lex": "../../"
+  }
+}

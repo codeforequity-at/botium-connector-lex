@@ -101,6 +101,18 @@ class BotiumConnectorLex {
             },
             sourceData: data
           }
+          if (data.responseCard) {
+            if (data.responseCard.contentType === 'application/vnd.amazonaws.card.generic') {
+              if (data.responseCard.genericAttachments) {
+                structuredResponse.cards = data.responseCard.genericAttachments.map(card => ({
+                  text: card.title,
+                  subtext: card.subTitle,
+                  image: (card.imageUrl && { mediaUri: card.imageUrl }) || null,
+                  buttons: (card.buttons && card.buttons.map(b => ({ text: b.text, payload: b.value }))) || []
+                }))
+              }
+            }
+          }
           this.queueBotSays(structuredResponse)
           return resolve()
         }
