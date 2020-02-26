@@ -113,7 +113,7 @@ class BotiumConnectorLex {
               }
             }
           }
-          this.queueBotSays(structuredResponse)
+          setTimeout(() => this.queueBotSays(structuredResponse), 0)
           return resolve()
         }
       })
