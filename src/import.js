@@ -154,7 +154,7 @@ module.exports = {
     buildentities: {
       describe: 'Add entity asserters to convo files',
       type: 'boolean',
-      default: true
+      default: false
     }
   }
 }

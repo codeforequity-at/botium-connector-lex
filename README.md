@@ -117,10 +117,11 @@ This connector provides a CLI interface for importing convos and utterances from
 * Bot intents and user examples are mapped to utterances in BotiumScript
 * Slots in user examples are either filled with enumeration values (for enumeration slot types) or with samples values from the [official documentation](https://developer.amazon.com/de/docs/custom-skills/slot-type-reference.html)
 * Convos are using the utterances as input and attach an INTENT asserter
+* If using the _--buildentities_ switch, the utterances are separated by slot names and an additional ENTITIES asserter is attached
 
 You can either run the CLI with *[botium-cli](https://github.com/codeforequity-at/botium-cli) (recommended - it is integrated there)*, or directly from this connector (see samples/BookTrip directory for some examples):
 
-    > npx botium-connector-lex-cli import --buildconvos --output spec/convo
+    > npx botium-connector-lex-cli import --buildconvos --buildentities --output spec/convo
 
 _Please note that you will have to install the npm package botium-core manually before using this CLI_
 
