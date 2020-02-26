@@ -86,7 +86,7 @@ class BotiumConnectorLex {
           return reject(new Error(`Lex answered with error ${util.inspect(err)}`))
         }
         if (data) {
-          debug(`Lex answered: ${util.inspect(data)}`)
+          debug(`Lex answered: ${JSON.stringify(data, null, 2)}`)
           this.sessionAttributes = data.sessionAttributes
           const structuredResponse = {
             sender: 'bot',
@@ -101,7 +101,6 @@ class BotiumConnectorLex {
             },
             sourceData: data
           }
-          debug(`Converted response: ${util.inspect(structuredResponse)}`)
           this.queueBotSays(structuredResponse)
           return resolve()
         }

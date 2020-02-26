@@ -5,7 +5,7 @@ const randomize = require('randomatic')
 const botium = require('botium-core')
 const debug = require('debug')('botium-connector-lex-nlp')
 
-const { loadSlotTypes, expandSlotType } = require('./slottypes')
+const { loadSlotTypes, loadCustomSlotTypes, expandSlotType } = require('./slottypes')
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -13,15 +13,6 @@ const getCaps = (caps) => {
   const result = Object.assign({}, caps || {})
   result.CONTAINERMODE = path.resolve(__dirname, '..', 'index.js')
   return result
-}
-
-const paginatedCall = async (fnc, extract, args, aggregateddata = []) => {
-  const data = await fnc(args).promise()
-  if (data.nextToken) {
-    return paginatedCall(fnc, { ...args, nextToken: data.nextToken }, [...aggregateddata, ...extract(data)])
-  } else {
-    return [...aggregateddata, ...extract(data)]
-  }
 }
 
 const extractIntentUtterances = async ({ caps }) => {
@@ -40,18 +31,8 @@ const extractIntentUtterances = async ({ caps }) => {
   const builtinSlotTypes = await loadSlotTypes('en-us')
   debug(`Loaded ${Object.keys(builtinSlotTypes).length} built-in slot types`)
 
-  const slotTypesShort = await paginatedCall(client.getSlotTypes.bind(client), d => d.slotTypes, {})
-
-  const customSlotTypes = {}
-  for (const slotTypeShort of slotTypesShort) {
-    const st = await client.getSlotType({
-      name: slotTypeShort.name,
-      version: '$LATEST'
-    }).promise()
-    if (st.enumerationValues && st.enumerationValues.length > 0) {
-      customSlotTypes[`${st.name}`] = st.enumerationValues.map(e => e.value)
-    }
-  }
+  const customSlotTypes = await loadCustomSlotTypes(client)
+  debug(`Loaded ${Object.keys(customSlotTypes).length} custom slot types`)
 
   const bot = await client.getBot({
     name: botName,
