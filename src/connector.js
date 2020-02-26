@@ -86,7 +86,7 @@ class BotiumConnectorLex {
           return reject(new Error(`Lex answered with error ${util.inspect(err)}`))
         }
         if (data) {
-          debug(`Lex answered: ${util.inspect(data)}`)
+          debug(`Lex answered: ${JSON.stringify(data, null, 2)}`)
           this.sessionAttributes = data.sessionAttributes
           const structuredResponse = {
             sender: 'bot',
@@ -101,7 +101,18 @@ class BotiumConnectorLex {
             },
             sourceData: data
           }
-          debug(`Converted response: ${util.inspect(structuredResponse)}`)
+          if (data.responseCard) {
+            if (data.responseCard.contentType === 'application/vnd.amazonaws.card.generic') {
+              if (data.responseCard.genericAttachments) {
+                structuredResponse.cards = data.responseCard.genericAttachments.map(card => ({
+                  text: card.title,
+                  subtext: card.subTitle,
+                  image: (card.imageUrl && { mediaUri: card.imageUrl }) || null,
+                  buttons: (card.buttons && card.buttons.map(b => ({ text: b.text, payload: b.value }))) || []
+                }))
+              }
+            }
+          }
           this.queueBotSays(structuredResponse)
           return resolve()
         }

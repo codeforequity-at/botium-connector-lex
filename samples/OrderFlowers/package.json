@@ -1,5 +1,5 @@
 {
-  "name": "book-trip",
+  "name": "order-flowers",
   "version": "1.0.0",
   "scripts": {
     "test": "mocha spec",

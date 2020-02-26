@@ -1,0 +1,3 @@
+UTT_OrderConfirmation
+Okay, your * will be ready for pickup by * on *, and will cost * dollars. Does this sound okay?
+Okay, your * will be ready for pickup by * on *. Does this sound okay?

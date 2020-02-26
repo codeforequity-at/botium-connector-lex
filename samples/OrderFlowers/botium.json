@@ -1,0 +1,13 @@
+{
+  "botium": {
+    "Capabilities": {
+      "PROJECTNAME": "Botium Project Lex",
+      "CONTAINERMODE": "lex",
+      "LEX_REGION": "...",
+      "LEX_ACCESS_KEY_ID": "...",
+      "LEX_SECRET_ACCESS_KEY": "...",
+      "LEX_PROJECT_NAME": "...",
+      "LEX_PROJECT_ALIAS": "..."
+    }
+  }
+}

@@ -1,0 +1,37 @@
+OrderFlowers
+
+#me
+I would like to order some flowers
+
+#bot
+UTT_FlowerTypeSlot
+CARDS What type of flowers would you like to order?
+MEDIA flowers
+BUTTONS Tulips|Lilies|Roses
+
+#me
+roses
+
+#bot
+UTT_PickupDateSlot
+
+#me
+tomorrow
+
+#bot
+UTT_PickupTimeSlot
+
+#me
+in the evening
+
+#bot
+UTT_OrderConfirmation
+
+#me
+yes
+
+#bot
+INTENT OrderFlowers
+ENTITIES FlowerType|PickupDate|PickupTime
+ENTITY_CONTENT FlowerType|roses
+ENTITY_CONTENT PickupTime|EV
