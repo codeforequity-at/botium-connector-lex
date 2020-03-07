@@ -8,7 +8,17 @@
       "LEX_SECRET_ACCESS_KEY": "...",
       "LEX_PROJECT_NAME": "...",
       "LEX_PROJECT_ALIAS": "...",
-      "LEX_SESSION_ATTRIBUTES": {"aa": "aa"}
+      "LEX_SESSION_ATTRIBUTES": {"aa": "aa"},
+      "LEX_ACCEPT": "audio/mpeg",
+      "USER_INPUTS": [
+        {
+          "ref": "MEDIA",
+          "src": "MediaInput",
+          "args": {
+            "downloadMedia": true
+          }
+        }
+      ]
     }
   }
 }
