@@ -1,0 +1,8 @@
+BookHotelAudioInput
+
+#me
+MEDIA book_stay_in_london.wav
+
+#bot
+ENTITY_CONTENT Nights|2
+ENTITY_CONTENT Location|london

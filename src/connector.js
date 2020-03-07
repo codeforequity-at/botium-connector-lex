@@ -1,7 +1,9 @@
+const util = require('util')
+const _ = require('lodash')
+const mime = require('mime-types')
 const randomize = require('randomatic')
 const AWS = require('aws-sdk')
 const debug = require('debug')('botium-connector-lex')
-const util = require('util')
 
 const Capabilities = {
   LEX_REGION: 'LEX_REGION',
@@ -9,13 +11,22 @@ const Capabilities = {
   LEX_SECRET_ACCESS_KEY: 'LEX_SECRET_ACCESS_KEY',
   LEX_PROJECT_NAME: 'LEX_PROJECT_NAME',
   LEX_PROJECT_ALIAS: 'LEX_PROJECT_ALIAS',
-  LEX_SESSION_ATTRIBUTES: 'LEX_SESSION_ATTRIBUTES'
+  LEX_SESSION_ATTRIBUTES: 'LEX_SESSION_ATTRIBUTES',
+  LEX_ACCEPT: 'LEX_ACCEPT',
+  LEX_CONTENTTYPE_TEXT: 'LEX_CONTENTTYPE_TEXT',
+  LEX_CONTENTTYPE_AUDIO: 'LEX_CONTENTTYPE_AUDIO'
+}
+
+const Defaults = {
+  [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
+  [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8',
+  [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1'
 }
 
 class BotiumConnectorLex {
   constructor ({ queueBotSays, caps }) {
     this.queueBotSays = queueBotSays
-    this.caps = caps
+    this.caps = Object.assign({}, Defaults, caps)
   }
 
   Validate () {
@@ -74,19 +85,44 @@ class BotiumConnectorLex {
     const params = {
       botName: this.caps[Capabilities.LEX_PROJECT_NAME],
       botAlias: this.caps[Capabilities.LEX_PROJECT_ALIAS],
-      inputText: msg.messageText,
       userId: this.lexUserId,
-      sessionAttributes: this.sessionAttributes
+      sessionAttributes: this.sessionAttributes,
+      accept: this.caps[Capabilities.LEX_ACCEPT]
     }
+    if (msg.media && msg.media.length > 0) {
+      const media = msg.media[0]
+      if (!media.buffer) {
+        return Promise.reject(new Error(`Media attachment ${media.mediaUri} not downloaded`))
+      }
+      if (!media.mimeType || !media.mimeType.startsWith('audio')) {
+        return Promise.reject(new Error(`Media attachment ${media.mediaUri} mime type ${media.mimeType || '<empty>'} not supported (audio only)`))
+      }
+      params.contentType = this.caps[Capabilities.LEX_CONTENTTYPE_AUDIO]
+      params.inputStream = media.buffer
+
+      if (!msg.attachments) {
+        msg.attachments = []
+      }
+      msg.attachments.push({
+        name: media.mediaUri,
+        mimeType: media.mimeType,
+        base64: media.buffer.toString('base64')
+      })
+      debug(`Lex posting audio: ${util.inspect(_.omit(params, ['inputStream']))}`)
+    } else {
+      params.contentType = this.caps[Capabilities.LEX_CONTENTTYPE_TEXT]
+      params.inputStream = msg.messageText
+      debug(`Lex posting content: ${util.inspect(params)}`)
+    }
+    msg.sourceData = params
 
     return new Promise((resolve, reject) => {
-      debug(`Lex posting text: ${util.inspect(params)}`)
-      this.client.postText(params, (err, data) => {
+      this.client.postContent(params, (err, data) => {
         if (err) {
           return reject(new Error(`Lex answered with error ${util.inspect(err)}`))
         }
         if (data) {
-          debug(`Lex answered: ${JSON.stringify(data, null, 2)}`)
+          debug(`Lex answered: ${util.inspect(_.omit(data, ['audioStream']))}`)
           this.sessionAttributes = data.sessionAttributes
           const structuredResponse = {
             sender: 'bot',
@@ -100,6 +136,23 @@ class BotiumConnectorLex {
                 : []
             },
             sourceData: data
+          }
+          if (data.audioStream && !data.contentType.startsWith('text') && data.contentType !== 'audio/pcm') {
+            let ext = mime.extension(data.contentType) || 'bin'
+            if (data.contentType === 'audio/mpeg') {
+              ext = 'mp3'
+            } else if (data.contentType === 'audio/ogg') {
+              ext = 'ogg'
+            }
+            structuredResponse.media = [{
+              mediaUri: `lex-response.${ext}`,
+              mimeType: data.contentType
+            }]
+            structuredResponse.attachments = [{
+              name: `lex-response.${ext}`,
+              mimeType: data.contentType,
+              base64: data.audioStream.toString('base64')
+            }]
           }
           if (data.responseCard) {
             if (data.responseCard.contentType === 'application/vnd.amazonaws.card.generic') {

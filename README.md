@@ -155,3 +155,18 @@ _Optional_.
 
 Initial session attributes. It must be object, or object as string. Lex supports just string attributes. 
 (otherwise retrurns error like "error sending to bot Error: Lex answered with error { InvalidParameterType: Expected params.sessionAttributes['somenumber'] to be a string")
+
+### LEX_ACCEPT
+_Default: text/plain; charset=utf-8_
+
+The response content type. If you prefer to receive audio set it to one of the supported audio formats (see [Lex docs](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LexRuntime.html#postContent-property))
+
+### LEX_CONTENTTYPE_TEXT
+_Default: text/plain; charset=utf-8_
+
+Content type used when sending text.
+
+### LEX_CONTENTTYPE_AUDIO
+_Default: audio/l16; rate=16000; channels=1_
+
+Content type used when sending audio. Has to match your audio data format.
