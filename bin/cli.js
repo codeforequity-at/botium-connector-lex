@@ -40,7 +40,7 @@ yargsCmd.usage('Botium Connector Lex CLI\n\nUsage: $0 [options]') // eslint-disa
     describe: 'Importing Convos and Utterances from Amazon Lex to Botium',
     builder: (yargs) => {
       for (const arg of Object.keys(importArgs)) {
-        if (arg.skipCli) continue
+        if (importArgs[arg].skipCli) continue
         yargs.option(arg, importArgs[arg])
       }
       yargs.option('output', {
