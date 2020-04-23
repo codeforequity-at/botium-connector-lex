@@ -128,15 +128,25 @@ class BotiumConnectorLex {
             sender: 'bot',
             messageText: data.message,
             nlp: {
-              intent: {
-                name: data.intentName
-              },
-              entities: data.slots
-                ? Object.entries(data.slots).filter(([name, value]) => value != null).map(([name, value]) => { return { name, value } })
-                : []
             },
             sourceData: data
           }
+
+          if (data.intentName) {
+            structuredResponse.nlp.intent = {
+              name: data.intentName
+            }
+          } else {
+            structuredResponse.nlp.intent = {
+              incomprehension: true
+            }
+          }
+          if (data.slots) {
+            structuredResponse.nlp.entities = Object.entries(data.slots).filter(([name, value]) => value != null).map(([name, value]) => { return { name, value } })
+          } else {
+            structuredResponse.nlp.entities = []
+          }
+
           if (data.audioStream && !data.contentType.startsWith('text') && data.contentType !== 'audio/pcm') {
             let ext = mime.extension(data.contentType) || 'bin'
             if (data.contentType === 'audio/mpeg') {
