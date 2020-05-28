@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "test": "mocha spec",
-    "import": "botium-connector-lex-cli import --buildconvos --buildentities --output spec/imported"
+    "download": "botium-connector-lex-cli import --buildconvos --buildentities --output spec/imported",
+    "upload": "botium-connector-lex-cli export --waitforready --input spec/imported",
+    "upload:update": "botium-connector-lex-cli export --waitforready --uploadmode append --input spec/imported"
   },
   "botium": {
     "convodirs": [
-      "spec\\convo"
+      "spec/convo"
     ],
     "expandConvos": true,
     "expandUtterancesToConvos": false
