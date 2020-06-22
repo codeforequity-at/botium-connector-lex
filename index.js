@@ -27,7 +27,7 @@ module.exports = {
       intentResolution: true,
       entityResolution: true
     },
-    helperText: '',
+    helperText: 'See section <b>Connecting Amazon Lex to Botium</b> in the <a href="https://github.com/codeforequity-at/botium-connector-lex" target="_blank" rel="noopener noreferrer">Github Repository</a> of the connector for instructions how to get an IAM user.',
     capabilities: [
       {
         name: 'LEX_ACCESS_KEY_ID',
