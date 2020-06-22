@@ -56,9 +56,9 @@ module.exports = {
       {
         name: 'LEX_PROJECT_NAME',
         label: 'Name of the Lex Bot (project name)',
-        type: 'choice',
+        type: 'query',
         required: true,
-        choices: async (caps) => {
+        query: async (caps) => {
           if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION) {
             const client = new AWS.LexModelBuildingService({
               apiVersion: '2017-04-19',
@@ -80,9 +80,9 @@ module.exports = {
       {
         name: 'LEX_PROJECT_ALIAS',
         label: 'Alias of the Lex Bot (see publishing)',
-        type: 'choice',
+        type: 'query',
         required: true,
-        choices: async (caps) => {
+        query: async (caps) => {
           if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME) {
             const client = new AWS.LexModelBuildingService({
               apiVersion: '2017-04-19',
