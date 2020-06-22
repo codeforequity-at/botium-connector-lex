@@ -50,7 +50,7 @@ module.exports = {
           { key: 'us-east-1', name: 'US East (N. Virginia)' },
           { key: 'us-west-2', name: 'US West (Oregon)' },
           { key: 'eu-west-1', name: 'Europe (Ireland)' },
-          { key: 'ap-southeast-2', name: 'Asia Pacific (Sydney)' },
+          { key: 'ap-southeast-2', name: 'Asia Pacific (Sydney)' }
         ]
       },
       {
@@ -102,5 +102,5 @@ module.exports = {
         }
       }
     ]
-  }  
+  }
 }
