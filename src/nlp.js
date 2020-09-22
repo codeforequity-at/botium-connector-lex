@@ -1,4 +1,3 @@
-const path = require('path')
 const _ = require('lodash')
 const AWS = require('aws-sdk')
 const randomize = require('randomatic')
@@ -11,7 +10,6 @@ const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const getCaps = (caps) => {
   const result = Object.assign({}, caps || {})
-  result.CONTAINERMODE = path.resolve(__dirname, '..', 'index.js')
   return result
 }
 
