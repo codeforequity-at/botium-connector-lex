@@ -100,6 +100,18 @@ module.exports = {
             }
           }
         }
+      },
+      {
+        name: 'LEX_CONTENTTYPE_AUDIO',
+        label: 'Input Audio Content Type',
+        type: 'choice',
+        required: false,
+        choices: [
+          { key: 'audio/l16; rate=16000; channels=1', name: 'audio/l16; rate=16000; channels=1' },
+          { key: 'audio/x-l16; sample-rate=16000; channel-count=1', name: 'audio/x-l16; sample-rate=16000; channel-count=1' },
+          { key: 'audio/lpcm; sample-rate=8000; sample-size-bits=16; channel-count=1; is-big-endian=false ', name: 'audio/lpcm; sample-rate=8000; sample-size-bits=16; channel-count=1; is-big-endian=false ' },
+          { key: 'audio/x-cbr-opus-with-preamble; preamble-size=0; bit-rate=256000; frame-size-milliseconds=4 ', name: 'audio/x-cbr-opus-with-preamble; preamble-size=0; bit-rate=256000; frame-size-milliseconds=4' }
+        ]
       }
     ]
   }
