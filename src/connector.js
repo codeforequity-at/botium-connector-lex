@@ -19,8 +19,7 @@ const Capabilities = {
 
 const Defaults = {
   [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
-  [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8',
-  [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1'
+  [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8'
 }
 
 class BotiumConnectorLex {
@@ -96,6 +95,9 @@ class BotiumConnectorLex {
       }
       if (!media.mimeType || !media.mimeType.startsWith('audio')) {
         return Promise.reject(new Error(`Media attachment ${media.mediaUri} mime type ${media.mimeType || '<empty>'} not supported (audio only)`))
+      }
+      if (!this.caps[Capabilities.LEX_CONTENTTYPE_AUDIO]) {
+        return Promise.reject(new Error('Audio Content Type not set'))
       }
       params.contentType = this.caps[Capabilities.LEX_CONTENTTYPE_AUDIO]
       params.inputStream = media.buffer

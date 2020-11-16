@@ -57,10 +57,10 @@ You have to create an **IAM user** to enable Botium to access the Amazon Lex API
   * Important: choose _Programmatic access_ as access type
   * Note access key and secret, you need it later
 * Choose _Attach existing policies to user directly_ to give permissions _AmazonLexFullAccess_
-  * Feel free to use finer grained policies if you know what you are doing, 
+  * Feel free to use finer grained policies if you know what you are doing,
   or read [Authentication and Access Control for Amazon Lex](https://docs.aws.amazon.com/lex/latest/dg/auth-and-access-control.html)
-    
-Create a botium.json with 
+
+Create a botium.json with
 * Amazon region where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
 * access key and secret of IAM user,
 * name of the bot
@@ -153,7 +153,7 @@ The alias of the bot. (see publishing)
 ### LEX_SESSION_ATTRIBUTES
 _Optional_.
 
-Initial session attributes. It must be object, or object as string. Lex supports just string attributes. 
+Initial session attributes. It must be object, or object as string. Lex supports just string attributes.
 (otherwise retrurns error like "error sending to bot Error: Lex answered with error { InvalidParameterType: Expected params.sessionAttributes['somenumber'] to be a string")
 
 ### LEX_ACCEPT
@@ -167,6 +167,4 @@ _Default: text/plain; charset=utf-8_
 Content type used when sending text.
 
 ### LEX_CONTENTTYPE_AUDIO
-_Default: audio/l16; rate=16000; channels=1_
-
 Content type used when sending audio. Has to match your audio data format.
