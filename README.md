@@ -88,7 +88,7 @@ To check the configuration, run the emulator (Botium CLI required) to bring up a
 > botium-cli emulator
 ```
 
-Botium setup is ready, you can begin to write your [BotiumScript](https://github.com/codeforequity-at/botium-core/wiki/Botium-Scripting) files.
+Botium setup is ready, you can begin to write your [BotiumScript](https://botium-docs.readthedocs.io/en/latest/05_botiumscript/index.html) files.
 
 ## How to start sample
 
