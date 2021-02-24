@@ -110,6 +110,25 @@ There is a small demo in [samples/BookTrip dir](./samples/BookTrip) with Botium 
 > cd ./samples/BookTrip
 > npm install && npm test
 ```
+
+## Setting Session and Request Attributes
+
+**Session attributes** can be initialized with the _LEX_SESSION_ATTRIBUTES_-capability (see below). They will be updated on each Lex response.
+
+They can be updated within a conversation as well:
+
+    #me
+    I would like to order some flowers
+    UPDATE_CUSTOM SET_LEX_SESSION_ATTRIBUTE|attr1|attr1-value
+
+**Request attributes** to be used on each request can be set with the _LEX_REQUEST_ATTRIBUTES_-capability (see below)
+
+They can be given within a conversation as well:
+
+    #me
+    I would like to order some flowers
+    UPDATE_CUSTOM SET_LEX_REQUEST_ATTRIBUTE|attr2|attr2-value
+
 ## Using the botium-connector-lex-cli
 
 This connector provides a CLI interface for importing convos and utterances from your Amazon Lex bot and convert it to BotiumScript.
@@ -155,6 +174,11 @@ _Optional_.
 
 Initial session attributes. It must be object, or object as string. Lex supports just string attributes. 
 (otherwise retrurns error like "error sending to bot Error: Lex answered with error { InvalidParameterType: Expected params.sessionAttributes['somenumber'] to be a string")
+
+### LEX_REQUEST_ATTRIBUTES
+_Optional_.
+
+Request attributes.
 
 ### LEX_ACCEPT
 _Default: text/plain; charset=utf-8_

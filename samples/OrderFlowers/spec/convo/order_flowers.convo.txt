@@ -2,6 +2,8 @@ OrderFlowers
 
 #me
 I would like to order some flowers
+UPDATE_CUSTOM SET_LEX_SESSION_ATTRIBUTE|attr1|attr1-value
+UPDATE_CUSTOM SET_LEX_REQUEST_ATTRIBUTE|attr2|attr2-value
 
 #bot
 UTT_FlowerTypeSlot

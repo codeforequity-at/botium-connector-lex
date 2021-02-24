@@ -7,7 +7,9 @@
       "LEX_ACCESS_KEY_ID": "...",
       "LEX_SECRET_ACCESS_KEY": "...",
       "LEX_PROJECT_NAME": "...",
-      "LEX_PROJECT_ALIAS": "..."
+      "LEX_PROJECT_ALIAS": "...",
+      "LEX_SESSION_ATTRIBUTES": {"bb": "bb"},
+      "LEX_REQUEST_ATTRIBUTES": {"aa": "aa"}
     }
   }
 }
