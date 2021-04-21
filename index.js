@@ -49,8 +49,12 @@ module.exports = {
         choices: [
           { key: 'us-east-1', name: 'US East (N. Virginia)' },
           { key: 'us-west-2', name: 'US West (Oregon)' },
+          { key: 'ap-southeast-1', name: 'Asia Pacific (Singapore)' },
+          { key: 'ap-southeast-2', name: 'Asia Pacific (Sydney)' },
+          { key: 'ap-northeast-1', name: 'Asia Pacific (Tokyo)' },
+          { key: 'eu-central-1', name: 'Europe (Frankfurt)' },
           { key: 'eu-west-1', name: 'Europe (Ireland)' },
-          { key: 'ap-southeast-2', name: 'Asia Pacific (Sydney)' }
+          { key: 'eu-west-2', name: 'Europe (London)' }
         ]
       },
       {
@@ -100,6 +104,20 @@ module.exports = {
             }
           }
         }
+      },
+      {
+        name: 'LEX_ACCEPT',
+        label: 'Audio Response Type',
+        description: 'Set the response audio type to the expected format (only applicable for voice tests with audio input)',
+        type: 'choice',
+        required: false,
+        advanced: true,
+        choices: [
+          { key: 'text/plain; charset=utf-8', name: 'Text' },
+          { key: 'audio/mpeg', name: 'MP3 Audio (*.mp3)' },
+          { key: 'audio/ogg', name: 'Ogg Vorbis Audio (*.ogg)' },
+          { key: 'audio/pcm', name: 'PCM Audio (*.wav)' }
+        ]
       }
     ]
   }

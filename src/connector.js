@@ -122,22 +122,28 @@ class BotiumConnectorLex {
       structuredResponse.nlp.entities = []
     }
 
-    if (data.audioStream && !data.contentType.startsWith('text') && data.contentType !== 'audio/pcm') {
-      let ext = mime.extension(data.contentType) || 'bin'
+    if (data.audioStream && !data.contentType.startsWith('text')) {
+      let ext = null
       if (data.contentType === 'audio/mpeg') {
         ext = 'mp3'
       } else if (data.contentType === 'audio/ogg') {
         ext = 'ogg'
+      } else if (data.contentType === 'audio/pcm') {
+        ext = 'wav'
+      } else {
+        ext = mime.extension(data.contentType)
       }
-      structuredResponse.media = [{
-        mediaUri: `lex-response.${ext}`,
-        mimeType: data.contentType
-      }]
-      structuredResponse.attachments = [{
-        name: `lex-response.${ext}`,
-        mimeType: data.contentType,
-        base64: data.audioStream.toString('base64')
-      }]
+      if (ext) {
+        structuredResponse.media = [{
+          mediaUri: `lex-response.${ext}`,
+          mimeType: data.contentType
+        }]
+        structuredResponse.attachments = [{
+          name: `lex-response.${ext}`,
+          mimeType: data.contentType,
+          base64: data.audioStream.toString('base64')
+        }]
+      }
     }
     if (data.responseCard) {
       if (data.responseCard.contentType === 'application/vnd.amazonaws.card.generic') {

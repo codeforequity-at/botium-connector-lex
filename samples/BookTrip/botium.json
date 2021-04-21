@@ -9,7 +9,7 @@
       "LEX_PROJECT_NAME": "...",
       "LEX_PROJECT_ALIAS": "...",
       "LEX_SESSION_ATTRIBUTES": {"aa": "aa"},
-      "LEX_ACCEPT": "audio/mpeg",
+      "LEX_ACCEPT": "audio/pcm",
       "USER_INPUTS": [
         {
           "ref": "MEDIA",
