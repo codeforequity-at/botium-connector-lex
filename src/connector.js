@@ -135,13 +135,9 @@ class BotiumConnectorLex {
       }
       if (ext) {
         structuredResponse.media = [{
-          mediaUri: `lex-response.${ext}`,
+          mediaUri: `data:${data.contentType};base64,${data.audioStream.toString('base64')}`,
+          altText: `lex-response.${ext}`,
           mimeType: data.contentType
-        }]
-        structuredResponse.attachments = [{
-          name: `lex-response.${ext}`,
-          mimeType: data.contentType,
-          base64: data.audioStream.toString('base64')
         }]
       }
     }
