@@ -115,7 +115,7 @@ class BotiumConnectorLex {
     }
   }
 
-  async _handleResponseV1 (data) {
+  _handleResponseV1 (data) {
     debug(`Lex V1 answered: ${JSON.stringify(_.omit(data, ['audioStream']), null, 2)}`)
     this.sessionAttributes = data.sessionAttributes
     const structuredResponse = {
@@ -175,7 +175,7 @@ class BotiumConnectorLex {
     setTimeout(() => this.queueBotSays(structuredResponse), 0)
   }
 
-  async _handleResponseV2 (data) {
+  _handleResponseV2 (data) {
     debug(`Lex V2 answered: ${JSON.stringify(_.omit(data, ['audioStream']), null, 2)}`)
     this.sessionState = data.sessionState
 
@@ -323,19 +323,29 @@ class BotiumConnectorLex {
         if (this._isV1()) {
           this.client.postContent(params, (err, data) => {
             if (err) return reject(new Error(`Lex V1 answered with error: ${err.message}`))
-            if (data) this._handleResponseV1(data)
+            if (data) {
+              try {
+                this._handleResponseV1(data)
+              } catch (err) {
+                return reject(new Error(`Lex V2 error: ${err.message}`))
+              }
+            }
             resolve()
           })
         } else {
           this.client.recognizeUtterance(params, (err, data) => {
-            if (err) return reject(new Error(`Lex V2 answered with error: ${err.message}`))
+            if (err) return reject(new Error(`Lex V1 answered with error: ${err.message}`))
             if (data) {
-              data.messages = base64AndUnzip(data.messages)
-              data.interpretations = base64AndUnzip(data.interpretations)
-              data.sessionState = base64AndUnzip(data.sessionState)
-              data.requestAttributes = base64AndUnzip(data.requestAttributes)
-              data.inputTranscript = base64AndUnzip(data.inputTranscript)
-              this._handleResponseV2(data)
+              try {
+                if (data.messages) data.messages = base64AndUnzip(data.messages)
+                if (data.interpretations) data.interpretations = base64AndUnzip(data.interpretations)
+                if (data.sessionState) data.sessionState = base64AndUnzip(data.sessionState)
+                if (data.requestAttributes) data.requestAttributes = base64AndUnzip(data.requestAttributes)
+                if (data.inputTranscript) data.inputTranscript = base64AndUnzip(data.inputTranscript)
+                this._handleResponseV2(data)
+              } catch (err) {
+                return reject(new Error(`Lex V2 error: ${err.message}`))
+              }
             }
             resolve()
           })
@@ -353,13 +363,25 @@ class BotiumConnectorLex {
         if (this._isV1()) {
           this.client.postText(params, (err, data) => {
             if (err) return reject(new Error(`Lex V1 answered with error: ${err.message}`))
-            if (data) this._handleResponseV1(data)
+            if (data) {
+              try {
+                this._handleResponseV1(data)
+              } catch (err) {
+                return reject(new Error(`Lex V1 error: ${err.message}`))
+              }
+            }
             resolve()
           })
         } else {
           this.client.recognizeText(params, (err, data) => {
             if (err) return reject(new Error(`Lex V2 answered with error: ${err.message}`))
-            if (data) this._handleResponseV2(data)
+            if (data) {
+              try {
+                this._handleResponseV2(data)
+              } catch (err) {
+                return reject(new Error(`Lex V2 error: ${err.message}`))
+              }
+            }
             resolve()
           })
         }
