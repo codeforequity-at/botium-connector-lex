@@ -262,20 +262,20 @@ class BotiumConnectorLex {
 
     const params = this._isV1()
       ? {
-        botName: this.caps[Capabilities.LEX_PROJECT_NAME],
-        botAlias: this.caps[Capabilities.LEX_PROJECT_ALIAS],
-        userId: this.lexUserId,
-        sessionAttributes: this.sessionAttributes,
-        requestAttributes: this.requestAttributes
-      }
+          botName: this.caps[Capabilities.LEX_PROJECT_NAME],
+          botAlias: this.caps[Capabilities.LEX_PROJECT_ALIAS],
+          userId: this.lexUserId,
+          sessionAttributes: this.sessionAttributes,
+          requestAttributes: this.requestAttributes
+        }
       : {
-        botId: this.caps[Capabilities.LEX_PROJECT_NAME],
-        botAliasId: this.caps[Capabilities.LEX_PROJECT_ALIAS],
-        localeId: this.caps[Capabilities.LEX_LOCALE],
-        sessionId: this.lexUserId,
-        sessionState: this.sessionState || { sessionAttributes: this.sessionAttributes },
-        requestAttributes: this.requestAttributes
-      }
+          botId: this.caps[Capabilities.LEX_PROJECT_NAME],
+          botAliasId: this.caps[Capabilities.LEX_PROJECT_ALIAS],
+          localeId: this.caps[Capabilities.LEX_LOCALE],
+          sessionId: this.lexUserId,
+          sessionState: this.sessionState || { sessionAttributes: this.sessionAttributes },
+          requestAttributes: this.requestAttributes
+        }
 
     if (msg.SET_LEX_SESSION_ATTRIBUTE) {
       if (this._isV1()) {
