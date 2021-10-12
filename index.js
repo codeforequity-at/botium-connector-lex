@@ -3,6 +3,7 @@ const BotiumConnectorLex = require('./src/connector')
 const { extractIntentUtterances, trainIntentUtterances, cleanupIntentUtterances } = require('./src/nlp')
 const { importHandler, importArgs } = require('./src/import')
 const { exportHandler, exportArgs } = require('./src/export')
+const { paginatedCall } = require('./src/slottypes')
 
 module.exports = {
   PluginVersion: 1,
@@ -30,6 +31,16 @@ module.exports = {
     helperText: 'See section <b>Connecting Amazon Lex to Botium</b> in the <a href="https://github.com/codeforequity-at/botium-connector-lex" target="_blank" rel="noopener noreferrer">Github Repository</a> of the connector for instructions how to get an IAM user.',
     capabilities: [
       {
+        name: 'LEX_VERSION',
+        label: 'Lex Version',
+        type: 'choice',
+        required: true,
+        choices: [
+          { key: 'V1', name: 'V1' },
+          { key: 'V2', name: 'V2' }
+        ]
+      },
+      {
         name: 'LEX_ACCESS_KEY_ID',
         label: 'IAM Access Key',
         type: 'string',
@@ -49,12 +60,15 @@ module.exports = {
         choices: [
           { key: 'us-east-1', name: 'US East (N. Virginia)' },
           { key: 'us-west-2', name: 'US West (Oregon)' },
+          { key: 'af-south-1', name: 'Africa (Cape Town)' },
           { key: 'ap-southeast-1', name: 'Asia Pacific (Singapore)' },
+          { key: 'ap-northeast-2', name: 'Asia Pacific (Seoul)' },
           { key: 'ap-southeast-2', name: 'Asia Pacific (Sydney)' },
           { key: 'ap-northeast-1', name: 'Asia Pacific (Tokyo)' },
           { key: 'eu-central-1', name: 'Europe (Frankfurt)' },
           { key: 'eu-west-1', name: 'Europe (Ireland)' },
-          { key: 'eu-west-2', name: 'Europe (London)' }
+          { key: 'eu-west-2', name: 'Europe (London)' },
+          { key: 'ca-central-1', name: 'Canada (Central)' }
         ]
       },
       {
@@ -63,18 +77,34 @@ module.exports = {
         type: 'query',
         required: true,
         query: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION) {
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_VERSION === 'V1') {
             const client = new AWS.LexModelBuildingService({
               apiVersion: '2017-04-19',
               region: caps.LEX_REGION,
               accessKeyId: caps.LEX_ACCESS_KEY_ID,
               secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
             })
-            const response = await client.getBots({ maxResults: 50 }).promise()
-            if (response.bots && response.bots.length > 0) {
-              return response.bots.map(b => ({
+            const bots = await paginatedCall(client.getBots.bind(client), r => r.bots)
+            if (bots && bots.length > 0) {
+              return bots.map(b => ({
                 key: b.name,
                 name: b.name,
+                description: b.description
+              }))
+            }
+          }
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_VERSION === 'V2') {
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              accessKeyId: caps.LEX_ACCESS_KEY_ID,
+              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const botSummaries = await paginatedCall(client.listBots.bind(client), r => r.botSummaries)
+            if (botSummaries && botSummaries.length > 0) {
+              return botSummaries.map(b => ({
+                key: b.botId,
+                name: b.botName,
                 description: b.description
               }))
             }
@@ -87,20 +117,62 @@ module.exports = {
         type: 'query',
         required: true,
         query: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME) {
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V1') {
             const client = new AWS.LexModelBuildingService({
               apiVersion: '2017-04-19',
               region: caps.LEX_REGION,
               accessKeyId: caps.LEX_ACCESS_KEY_ID,
               secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
             })
-            const response = await client.getBotAliases({ botName: caps.LEX_PROJECT_NAME, maxResults: 50 }).promise()
-            if (response.BotAliases && response.BotAliases.length > 0) {
-              return response.BotAliases.map(b => ({
+            const botAliases = await paginatedCall(client.getBotAliases.bind(client), r => r.BotAliases, { botName: caps.LEX_PROJECT_NAME })
+            if (botAliases && botAliases.length > 0) {
+              return botAliases.map(b => ({
                 key: b.name,
                 name: b.name,
                 description: b.description
               }))
+            }
+          }
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              accessKeyId: caps.LEX_ACCESS_KEY_ID,
+              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const botAliasSummaries = await paginatedCall(client.listBotAliases.bind(client), r => r.botAliasSummaries, { botId: caps.LEX_PROJECT_NAME })
+            if (botAliasSummaries && botAliasSummaries.length > 0) {
+              return botAliasSummaries.map(b => ({
+                key: b.botAliasId,
+                name: b.botAliasName,
+                description: b.description
+              }))
+            }
+          }
+        }
+      },
+      {
+        name: 'LEX_LOCALE',
+        label: 'Locale of the Lex Bot (V2 only)',
+        type: 'query',
+        query: async (caps) => {
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              accessKeyId: caps.LEX_ACCESS_KEY_ID,
+              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const aliasResponse = await client.describeBotAlias({ botId: caps.LEX_PROJECT_NAME, botAliasId: caps.LEX_PROJECT_ALIAS }).promise()
+            if (aliasResponse && aliasResponse.botVersion) {
+              const botLocaleSummaries = await paginatedCall(client.listBotLocales.bind(client), r => r.botLocaleSummaries, { botId: caps.LEX_PROJECT_NAME, botVersion: aliasResponse.botVersion })
+              if (botLocaleSummaries && botLocaleSummaries.length > 0) {
+                return botLocaleSummaries.map(b => ({
+                  key: b.localeId,
+                  name: b.localeName,
+                  description: b.description
+                }))
+              }
             }
           }
         }

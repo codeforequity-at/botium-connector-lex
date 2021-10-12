@@ -8,6 +8,7 @@ const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const exportIntents = async ({ caps, uploadmode, newBotName, newBotAliasName, waitforready }, { convos, utterances }, { statusCallback }) => {
   const driver = new botium.BotDriver(caps)
+  if (driver.caps.LEX_VERSION !== 'V1') throw new Error('Only supported for Lex Version 1')
 
   const status = (log, obj) => {
     debug(log, obj)

@@ -1,0 +1,8 @@
+BookHotel
+
+#me
+Book a 2​ night stay in London
+
+#bot
+ENTITIES Nights|Location
+ENTITY_VALUES 2|London

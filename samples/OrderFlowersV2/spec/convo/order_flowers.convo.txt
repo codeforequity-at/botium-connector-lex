@@ -1,0 +1,36 @@
+OrderFlowers
+
+#me
+I would like to order some flowers
+UPDATE_CUSTOM SET_LEX_SESSION_ATTRIBUTE|attr1|attr1-value
+UPDATE_CUSTOM SET_LEX_REQUEST_ATTRIBUTE|attr2|attr2-value
+
+#bot
+UTT_FlowerTypeSlot
+
+#me
+roses
+
+#bot
+UTT_PickupDateSlot
+
+#me
+tomorrow
+
+#bot
+UTT_PickupTimeSlot
+
+#me
+in the evening
+
+#bot
+UTT_OrderConfirmation
+
+#me
+yes
+
+#bot
+INTENT OrderFlowers
+ENTITIES FlowerType|PickupDate|PickupTime
+ENTITY_CONTENT FlowerType|roses
+ENTITY_CONTENT PickupTime|EV

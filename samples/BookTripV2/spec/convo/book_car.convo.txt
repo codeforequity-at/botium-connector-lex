@@ -1,0 +1,15 @@
+BookCar
+
+#me
+Reserve a car pls
+
+#bot
+In what city do you need to rent a car?
+INTENT BookCar
+
+#me
+Boston
+
+#bot
+ENTITIES PickUpCity
+ENTITY_VALUES Boston

@@ -152,6 +152,11 @@ For getting help on the available CLI options and switches, run:
 
 Set the capability __CONTAINERMODE__ to __lex__ to activate this connector.
 
+### LEX_VERSION
+_Default: V1_
+
+V1 or V2
+
 ### LEX_ACCESS_KEY_ID
 See Amazon IAM user
 

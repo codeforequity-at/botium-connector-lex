@@ -15,6 +15,7 @@ const getCaps = (caps) => {
 
 const extractIntentUtterances = async ({ caps }) => {
   const driver = new botium.BotDriver(getCaps(caps))
+  if (driver.caps.LEX_VERSION !== 'V1') throw new Error('Only supported for Lex Version 1')
 
   const botName = driver.caps.LEX_PROJECT_NAME
   const botAlias = driver.caps.LEX_PROJECT_ALIAS
@@ -77,6 +78,7 @@ const extractIntentUtterances = async ({ caps }) => {
 
 const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   const driver = new botium.BotDriver(getCaps(caps))
+  if (driver.caps.LEX_VERSION !== 'V1') throw new Error('Only supported for Lex Version 1')
 
   const client = new AWS.LexModelBuildingService({
     apiVersion: '2017-04-19',
@@ -90,14 +92,16 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
     childDirected: origBot ? origBot.childDirected : true,
     locale: origBot ? origBot.locale : 'en-US',
     voiceId: '',
-    abortStatement: origBot ? origBot.abortStatement : {
-      messages: [
-        {
-          content: "I'm sorry, I don't understand.",
-          contentType: 'PlainText'
-        }
-      ]
-    },
+    abortStatement: origBot
+      ? origBot.abortStatement
+      : {
+          messages: [
+            {
+              content: "I'm sorry, I don't understand.",
+              contentType: 'PlainText'
+            }
+          ]
+        },
     intents: []
   }
   const trainedIntents = []
