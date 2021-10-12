@@ -95,13 +95,13 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
     abortStatement: origBot
       ? origBot.abortStatement
       : {
-          messages: [
-            {
-              content: "I'm sorry, I don't understand.",
-              contentType: 'PlainText'
-            }
-          ]
-        },
+        messages: [
+          {
+            content: "I'm sorry, I don't understand.",
+            contentType: 'PlainText'
+          }
+        ]
+      },
     intents: []
   }
   const trainedIntents = []
