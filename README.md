@@ -164,15 +164,24 @@ See Amazon IAM user
 See Amazon IAM user
 
 ### LEX_REGION
-Amazon region code where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex).
+Amazon region code where you have created your bot. [Amazon Lex V1 Console](https://console.aws.amazon.com/lex)/[Amazon Lex V2 Console](https://console.aws.amazon.com/lexv2).
 
 _Hint: a list of region codes is available [here](https://docs.aws.amazon.com/de_de/general/latest/gr/rande.html)_
 
 ### LEX_PROJECT_NAME
-The name of the bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
+The name (V1) or ID (V2) of the bot. See [Amazon Lex V1 Console](https://console.aws.amazon.com/lex)/[Amazon Lex V2 Console](https://console.aws.amazon.com/lexv2).
+
+_For Lex V2, use the Project **ID** instead of the name_
 
 ### LEX_PROJECT_ALIAS
-The alias of the bot. (see publishing)
+The alias name (V1) or ID (V2) of the bot. (see Publishing section in the Amazon Lex Console)
+
+_For Lex V2, use the alias **ID** instead of the name_
+
+### LEX_LOCALE (V2 only)
+_Default: en\_US_
+
+Publishing alias locale. (see Publishing section in the Amazon Lex Console)
 
 ### LEX_SESSION_ATTRIBUTES
 _Optional_.

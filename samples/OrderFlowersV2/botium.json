@@ -9,6 +9,7 @@
       "LEX_SECRET_ACCESS_KEY": "...",
       "LEX_PROJECT_NAME": "...",
       "LEX_PROJECT_ALIAS": "...",
+      "LEX_LOCALE": "en_US",
       "LEX_SESSION_ATTRIBUTES__": {"bb": "bb"},
       "LEX_REQUEST_ATTRIBUTES__": {"aa": "aa"}
     }
