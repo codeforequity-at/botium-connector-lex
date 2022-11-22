@@ -191,6 +191,42 @@ module.exports = {
           { key: 'audio/pcm', name: 'PCM Audio (*.wav)' }
         ]
       }
+    ],
+    actions: [
+      {
+        name: 'GetAgentMetaData',
+        description: 'GetAgentMetaData',
+        run: async (caps) => {
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
+            const client = new AWS.LexModelBuildingService({
+              apiVersion: '2017-04-19',
+              region: caps.LEX_REGION,
+              accessKeyId: caps.LEX_ACCESS_KEY_ID,
+              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const bot = await client.getBot({ name: caps.LEX_PROJECT_NAME, versionOrAlias: caps.LEX_PROJECT_ALIAS }).promise()
+            return {
+              name: bot.name,
+              description: bot.description,
+              metadata: bot
+            }
+          }
+          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              accessKeyId: caps.LEX_ACCESS_KEY_ID,
+              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const botResponse = await client.describeBot({ botId: caps.LEX_PROJECT_NAME }).promise()
+            return {
+              name: botResponse.botName,
+              description: botResponse.description,
+              metadata: botResponse
+            }
+          }
+        }
+      }
     ]
   }
 }
