@@ -21,10 +21,11 @@ const loadSlotTypes = (language) => {
   return slotTypes
 }
 
-const paginatedCall = async (fnc, extract, args = {}, aggregateddata = []) => {
+const paginatedCall = async (fnc, extract, args = {}, aggregateddata = [], context = { page: 0 }) => {
+  debug(`Reading page #${context.page}`)
   const data = await fnc({ maxResults: 50, ...args }).promise()
   if (data.nextToken) {
-    return paginatedCall(fnc, { maxResults: 50, ...args, nextToken: data.nextToken }, [...aggregateddata, ...(extract(data) || [])])
+    return paginatedCall(fnc, extract, { maxResults: 50, ...args, nextToken: data.nextToken }, [...aggregateddata, ...(extract(data) || [])], { page: context.page + 1 })
   } else {
     return [...aggregateddata, ...(extract(data) || [])]
   }
@@ -34,7 +35,12 @@ const loadCustomSlotTypes = async (client, caps) => {
   const customSlotTypes = {}
   if (caps.LEX_VERSION === 'V1') {
     const slotTypesShort = await paginatedCall(client.getSlotTypes.bind(client), d => d.slotTypes, {})
-    for (const slotTypeShort of slotTypesShort) {
+    for (let i = 0; i < slotTypesShort.length; i++) {
+      if (i % 10 === 0) {
+        debug(`Reading slot type #${i}/${slotTypesShort.length}`)
+      }
+
+      const slotTypeShort = slotTypesShort[i]
       const st = await client.getSlotType({ name: slotTypeShort.name, version: '$LATEST' }).promise()
       if (st.enumerationValues && st.enumerationValues.length > 0) {
         customSlotTypes[`${st.name}`] = st.enumerationValues.map(e => e.value)

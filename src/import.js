@@ -38,12 +38,14 @@ const importIntents = async ({ caps, buildconvos, buildentities }) => {
   const customSlotTypes = await loadCustomSlotTypes(client, driver.caps)
   debug(`Loaded ${Object.keys(customSlotTypes).length} custom slot types`)
 
-  let intents = []
+  let intents
   if (botVersion === 'V1') {
     intents = (await client.getBot({ name: botName, versionOrAlias: botAlias }).promise()).intents || []
   } else {
     intents = await paginatedCall(client.listIntents.bind(client), d => d.intentSummaries, { botId: driver.caps.LEX_PROJECT_NAME, botVersion: driver.caps.LEX_PROJECT_VERSION, localeId: driver.caps.LEX_LOCALE || Defaults.LEX_LOCALE }) || []
   }
+
+  debug(`Loaded ${intents.length} intents`)
 
   const convos = []
   const utterances = []

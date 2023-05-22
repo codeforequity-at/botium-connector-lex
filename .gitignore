@@ -68,3 +68,4 @@ dist
 package-lock.json
 botium.local.json
 yarn.lock
+/test/nightly/botium.json
