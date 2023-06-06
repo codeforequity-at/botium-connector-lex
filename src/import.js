@@ -1,48 +1,50 @@
 const AWS = require('aws-sdk')
-const botium = require('botium-core')
 const debug = require('debug')('botium-connector-lex-import')
 
-const { Defaults } = require('./connector')
+const Connector = require('./connector')
+const { Defaults } = Connector
 const { paginatedCall, loadSlotTypes, loadCustomSlotTypes, extractSlotNames, expandSlotType } = require('./slottypes')
 
 const importIntents = async ({ caps, buildconvos, buildentities }) => {
-  const driver = new botium.BotDriver(caps)
+  const connector = new Connector({ caps })
+  await connector.Validate()
+  caps = connector.caps
 
-  const botVersion = driver.caps.LEX_VERSION
-  const botName = driver.caps.LEX_PROJECT_NAME
-  const botAlias = driver.caps.LEX_PROJECT_ALIAS
+  const botVersion = caps.LEX_VERSION
+  const botName = caps.LEX_PROJECT_NAME
+  const botAlias = caps.LEX_PROJECT_ALIAS
 
   const client = botVersion === 'V1'
     ? new AWS.LexModelBuildingService({
       apiVersion: '2017-04-19',
-      region: driver.caps.LEX_REGION,
-      accessKeyId: driver.caps.LEX_ACCESS_KEY_ID,
-      secretAccessKey: driver.caps.LEX_SECRET_ACCESS_KEY
+      region: caps.LEX_REGION,
+      accessKeyId: caps.LEX_ACCESS_KEY_ID,
+      secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
     })
     : new AWS.LexModelsV2({
       apiVersion: '2020-08-07',
-      region: driver.caps.LEX_REGION,
-      accessKeyId: driver.caps.LEX_ACCESS_KEY_ID,
-      secretAccessKey: driver.caps.LEX_SECRET_ACCESS_KEY
+      region: caps.LEX_REGION,
+      accessKeyId: caps.LEX_ACCESS_KEY_ID,
+      secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
     })
-  if (botVersion === 'V2' && !driver.caps.LEX_PROJECT_VERSION) {
+  if (botVersion === 'V2' && !caps.LEX_PROJECT_VERSION) {
     const aliasResponse = await client.describeBotAlias({ botId: botName, botAliasId: botAlias }).promise()
     if (aliasResponse && aliasResponse.botVersion) {
-      driver.caps.LEX_PROJECT_VERSION = aliasResponse.botVersion
+      caps.LEX_PROJECT_VERSION = aliasResponse.botVersion
     }
   }
 
   const builtinSlotTypes = await loadSlotTypes('en-us')
   debug(`Loaded ${Object.keys(builtinSlotTypes).length} built-in slot types`)
 
-  const customSlotTypes = await loadCustomSlotTypes(client, driver.caps)
+  const customSlotTypes = await loadCustomSlotTypes(client, caps)
   debug(`Loaded ${Object.keys(customSlotTypes).length} custom slot types`)
 
   let intents
   if (botVersion === 'V1') {
     intents = (await client.getBot({ name: botName, versionOrAlias: botAlias }).promise()).intents || []
   } else {
-    intents = await paginatedCall(client.listIntents.bind(client), d => d.intentSummaries, { botId: driver.caps.LEX_PROJECT_NAME, botVersion: driver.caps.LEX_PROJECT_VERSION, localeId: driver.caps.LEX_LOCALE || Defaults.LEX_LOCALE }) || []
+    intents = await paginatedCall(client.listIntents.bind(client), d => d.intentSummaries, { botId: caps.LEX_PROJECT_NAME, botVersion: caps.LEX_PROJECT_VERSION, localeId: caps.LEX_LOCALE || Defaults.LEX_LOCALE }) || []
   }
 
   debug(`Loaded ${intents.length} intents`)
@@ -58,10 +60,10 @@ const importIntents = async ({ caps, buildconvos, buildentities }) => {
       sampleUtterances = botIntent.sampleUtterances || []
       slots = botIntent.slots || []
     } else {
-      const botIntent = await client.describeIntent({ botId: driver.caps.LEX_PROJECT_NAME, botVersion: driver.caps.LEX_PROJECT_VERSION, localeId: driver.caps.LEX_LOCALE || Defaults.LEX_LOCALE, intentId: intent.intentId }).promise()
+      const botIntent = await client.describeIntent({ botId: caps.LEX_PROJECT_NAME, botVersion: caps.LEX_PROJECT_VERSION, localeId: caps.LEX_LOCALE || Defaults.LEX_LOCALE, intentId: intent.intentId }).promise()
       sampleUtterances = (botIntent.sampleUtterances && botIntent.sampleUtterances.map(s => s.utterance)) || []
 
-      const botSlots = await paginatedCall(client.listSlots.bind(client), d => d.slotSummaries, { botId: driver.caps.LEX_PROJECT_NAME, botVersion: driver.caps.LEX_PROJECT_VERSION, localeId: driver.caps.LEX_LOCALE || Defaults.LEX_LOCALE, intentId: intent.intentId }) || []
+      const botSlots = await paginatedCall(client.listSlots.bind(client), d => d.slotSummaries, { botId: caps.LEX_PROJECT_NAME, botVersion: caps.LEX_PROJECT_VERSION, localeId: caps.LEX_LOCALE || Defaults.LEX_LOCALE, intentId: intent.intentId }) || []
       slots = botSlots.map(s => ({ name: s.slotName, slotType: s.slotTypeId }))
     }
     const userExamples = {}
