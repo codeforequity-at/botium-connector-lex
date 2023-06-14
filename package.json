@@ -59,8 +59,5 @@
     "slug": "^5.1.0",
     "yargs": "^17.2.1",
     "zlib": "^1.0.5"
-  },
-  "peerDependencies": {
-    "botium-core": "^1.11.14"
   }
 }
