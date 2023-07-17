@@ -21,7 +21,7 @@ describe('connector', function () {
   it('should successfully get an answer for say hello', async function () {
     await this.connector.UserSays({ messageText: 'Hello' })
     const botMsg = await this.botMsgPromise
-    assert.isTrue(botMsg?.messageText === 'Sorry, can you please repeat that?', `Incorrect response${botMsg?.messageText}"`)
+    assert.isTrue(botMsg?.messageText === 'I didn\'t understand you, what would you like to do?', `Incorrect response "${botMsg?.messageText}"`)
   }).timeout(20000)
 
   afterEach(async function () {
