@@ -5,6 +5,29 @@ const { importHandler, importArgs } = require('./src/import')
 const { exportHandler, exportArgs } = require('./src/export')
 const { paginatedCall } = require('./src/slottypes')
 
+const sts = new AWS.STS()
+
+const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
+  return new Promise((resolve, reject) => {
+    const timestamp = (new Date()).getTime()
+    const params = {
+      RoleArn: roleArn,
+      ExternalId: roleExternalId,
+      RoleSessionName: `be-descriptibe-here-${timestamp}`
+    }
+    sts.assumeRole(params, (err, data) => {
+      if (err) reject(err)
+      else {
+        resolve({
+          accessKeyId: data.Credentials.AccessKeyId,
+          secretAccessKey: data.Credentials.SecretAccessKey,
+          sessionToken: data.Credentials.SessionToken
+        })
+      }
+    })
+  })
+}
+
 module.exports = {
   PluginVersion: 1,
   PluginClass: BotiumConnectorLex,
@@ -141,6 +164,44 @@ module.exports = {
               }))
             }
           }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_VERSION === 'V1') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelBuildingService({
+              apiVersion: '2017-04-19',
+              region: caps.LEX_REGION,
+              ...accessparams
+            })
+            const bots = await paginatedCall(client.getBots.bind(client), r => r.bots)
+            if (bots && bots.length > 0) {
+              return bots.map(b => ({
+                key: b.name,
+                name: b.name,
+                description: b.description
+              }))
+            }
+          }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_VERSION === 'V2') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              ...accessparams
+            })
+            const botSummaries = await paginatedCall(client.listBots.bind(client), r => r.botSummaries)
+            if (botSummaries && botSummaries.length > 0) {
+              return botSummaries.map(b => ({
+                key: b.botId,
+                name: b.botName,
+                description: b.description
+              }))
+            }
+          }
         }
       },
       {
@@ -181,6 +242,44 @@ module.exports = {
               }))
             }
           }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V1') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelBuildingService({
+              apiVersion: '2017-04-19',
+              region: caps.LEX_REGION,
+              ...accessparams
+            })
+            const botAliases = await paginatedCall(client.getBotAliases.bind(client), r => r.BotAliases, { botName: caps.LEX_PROJECT_NAME })
+            if (botAliases && botAliases.length > 0) {
+              return botAliases.map(b => ({
+                key: b.name,
+                name: b.name,
+                description: b.description
+              }))
+            }
+          }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              ...accessparams
+            })
+            const botAliasSummaries = await paginatedCall(client.listBotAliases.bind(client), r => r.botAliasSummaries, { botId: caps.LEX_PROJECT_NAME })
+            if (botAliasSummaries && botAliasSummaries.length > 0) {
+              return botAliasSummaries.map(b => ({
+                key: b.botAliasId,
+                name: b.botAliasName,
+                description: b.description
+              }))
+            }
+          }
         }
       },
       {
@@ -194,6 +293,28 @@ module.exports = {
               region: caps.LEX_REGION,
               accessKeyId: caps.LEX_ACCESS_KEY_ID,
               secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const aliasResponse = await client.describeBotAlias({ botId: caps.LEX_PROJECT_NAME, botAliasId: caps.LEX_PROJECT_ALIAS }).promise()
+            if (aliasResponse && aliasResponse.botVersion) {
+              const botLocaleSummaries = await paginatedCall(client.listBotLocales.bind(client), r => r.botLocaleSummaries, { botId: caps.LEX_PROJECT_NAME, botVersion: aliasResponse.botVersion })
+              if (botLocaleSummaries && botLocaleSummaries.length > 0) {
+                return botLocaleSummaries.map(b => ({
+                  key: b.localeId,
+                  name: b.localeName,
+                  description: b.description
+                }))
+              }
+            }
+          }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              ...accessparams
             })
             const aliasResponse = await client.describeBotAlias({ botId: caps.LEX_PROJECT_NAME, botAliasId: caps.LEX_PROJECT_ALIAS }).promise()
             if (aliasResponse && aliasResponse.botVersion) {
@@ -249,6 +370,40 @@ module.exports = {
               region: caps.LEX_REGION,
               accessKeyId: caps.LEX_ACCESS_KEY_ID,
               secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+            })
+            const botResponse = await client.describeBot({ botId: caps.LEX_PROJECT_NAME }).promise()
+            return {
+              name: botResponse.botName,
+              description: botResponse.description,
+              metadata: botResponse
+            }
+          }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelBuildingService({
+              apiVersion: '2017-04-19',
+              region: caps.LEX_REGION,
+              ...accessparams
+            })
+            const bot = await client.getBot({ name: caps.LEX_PROJECT_NAME, versionOrAlias: caps.LEX_PROJECT_ALIAS }).promise()
+            return {
+              name: bot.name,
+              description: bot.description,
+              metadata: bot
+            }
+          }
+          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+            const accessparams = await getCrossAccountCredentials({
+              roleArn: caps.LEX_ROLE_ARN,
+              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
+            })
+            const client = new AWS.LexModelsV2({
+              apiVersion: '2020-08-07',
+              region: caps.LEX_REGION,
+              ...accessparams
             })
             const botResponse = await client.describeBot({ botId: caps.LEX_PROJECT_NAME }).promise()
             return {
