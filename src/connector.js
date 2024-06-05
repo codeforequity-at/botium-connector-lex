@@ -9,6 +9,9 @@ const debug = require('debug')('botium-connector-lex')
 const Capabilities = {
   LEX_VERSION: 'LEX_VERSION',
   LEX_REGION: 'LEX_REGION',
+  LEX_AUTH_MODE: 'LEX_AUTH_MODE',
+  LEX_ROLE_ARN: 'LEX_ROLE_ARN',
+  LEX_ROLE_EXTERNAL_ID: 'LEX_ROLE_EXTERNAL_ID',
   LEX_ACCESS_KEY_ID: 'LEX_ACCESS_KEY_ID',
   LEX_SECRET_ACCESS_KEY: 'LEX_SECRET_ACCESS_KEY',
   LEX_LOCALE: 'LEX_LOCALE',
@@ -23,6 +26,7 @@ const Capabilities = {
 }
 
 const Defaults = {
+  [Capabilities.LEX_AUTH_MODE]: 'IAM_KEYS',
   [Capabilities.LEX_VERSION]: 'V1',
   [Capabilities.LEX_LOCALE]: 'en_US',
   [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
@@ -32,6 +36,29 @@ const Defaults = {
 
 const gzipAndBase64 = (obj) => zlib.gzipSync(JSON.stringify(obj)).toString('base64')
 const base64AndUnzip = (str) => JSON.parse(zlib.gunzipSync(Buffer.from(str, 'base64')))
+
+const sts = new AWS.STS()
+
+const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
+  return new Promise((resolve, reject) => {
+    const timestamp = (new Date()).getTime()
+    const params = {
+      RoleArn: roleArn,
+      ExternalId: roleExternalId,
+      RoleSessionName: `be-descriptibe-here-${timestamp}`
+    }
+    sts.assumeRole(params, (err, data) => {
+      if (err) reject(err)
+      else {
+        resolve({
+          accessKeyId: data.Credentials.AccessKeyId,
+          secretAccessKey: data.Credentials.SecretAccessKey,
+          sessionToken: data.Credentials.SessionToken
+        })
+      }
+    })
+  })
+}
 
 class BotiumConnectorLex {
   constructor ({ queueBotSays, caps }) {
@@ -44,8 +71,10 @@ class BotiumConnectorLex {
 
     if (!this._isV1() && !this._isV2()) throw new Error('LEX_VERSION capability V1 or V2 required')
     if (!this.caps[Capabilities.LEX_REGION]) throw new Error('LEX_REGION capability required')
-    if (!this.caps[Capabilities.LEX_ACCESS_KEY_ID]) throw new Error('LEX_ACCESS_KEY_ID capability required')
-    if (!this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]) throw new Error('LEX_SECRET_ACCESS_KEY capability required')
+    if (this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_ROLE' && !this.caps[Capabilities.LEX_ROLE_ARN]) throw new Error('LEX_ROLE_ARN capability required when using LEX_AUTH_MODE = IAM_ROLE')
+    if (this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_ROLE' && !this.caps[Capabilities.LEX_ROLE_EXTERNAL_ID]) throw new Error('LEX_ROLE_EXTERNAL_ID capability required when using LEX_AUTH_MODE = IAM_ROLE')
+    if (this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_KEYS' && !this.caps[Capabilities.LEX_ACCESS_KEY_ID]) throw new Error('LEX_ACCESS_KEY_ID capability required when using LEX_AUTH_MODE = IAM_KEYS')
+    if (this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_KEYS' && !this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]) throw new Error('LEX_SECRET_ACCESS_KEY capability required when using LEX_AUTH_MODE = IAM_KEYS')
     if (!this.caps[Capabilities.LEX_PROJECT_NAME]) throw new Error('LEX_PROJECT_NAME capability required')
     if (!this.caps[Capabilities.LEX_PROJECT_ALIAS]) throw new Error('LEX_PROJECT_ALIAS capability required')
     if (this._isV2() && !this.caps[Capabilities.LEX_LOCALE]) throw new Error('LEX_LOCALE capability required')
@@ -56,19 +85,28 @@ class BotiumConnectorLex {
 
   async Build () {
     debug('Build called')
+
+    const accessparams = this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_ROLE'
+      ? await getCrossAccountCredentials({
+        roleArn: this.caps[Capabilities.LEX_ROLE_ARN],
+        roleExternalId: this.caps[Capabilities.LEX_ROLE_EXTERNAL_ID]
+      })
+      : {
+          accessKeyId: this.caps[Capabilities.LEX_ACCESS_KEY_ID],
+          secretAccessKey: this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]
+        }
+
     if (this._isV1()) {
       this.client = new AWS.LexRuntime({
         apiVersion: '2016-11-28',
         region: this.caps[Capabilities.LEX_REGION],
-        accessKeyId: this.caps[Capabilities.LEX_ACCESS_KEY_ID],
-        secretAccessKey: this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]
+        ...accessparams
       })
     } else {
       this.client = new AWS.LexRuntimeV2({
         apiVersion: '2020-08-07',
         region: this.caps[Capabilities.LEX_REGION],
-        accessKeyId: this.caps[Capabilities.LEX_ACCESS_KEY_ID],
-        secretAccessKey: this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]
+        ...accessparams
       })
     }
   }
