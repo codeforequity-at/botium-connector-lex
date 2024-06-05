@@ -41,16 +41,48 @@ module.exports = {
         ]
       },
       {
+        name: 'LEX_AUTH_MODE',
+        label: 'Authentication Mode',
+        description: 'Default: IAM Access Keys',
+        type: 'choice',
+        required: false,
+        advanced: false,
+        choices: [
+          { key: 'IAM_KEYS', name: 'IAM Access Keys' },
+          { key: 'IAM_ROLE', name: 'IAM Role' }
+        ]
+      },
+      {
+        name: 'LEX_ROLE_ARN',
+        label: 'IAM Role ARN',
+        description: 'ARN of the IAM Role to assume (for IAM Role based authentication only)',
+        type: 'string',
+        required: false,
+        advanced: false
+      },
+      {
+        name: 'LEX_ROLE_EXTERNAL_ID',
+        label: 'IAM Role External ID',
+        description: 'External ID of the IAM Role to assume (for IAM Role based authentication only)',
+        type: 'string',
+        required: false,
+        advanced: false
+      },
+      {
         name: 'LEX_ACCESS_KEY_ID',
         label: 'IAM Access Key',
+        description: 'Access Key of the IAM User (for IAM Access Keys authentication only)',
         type: 'string',
-        required: true
+        required: false,
+        advanced: false
       },
       {
         name: 'LEX_SECRET_ACCESS_KEY',
         label: 'IAM Secret Key',
+        description: 'Secret Key of the IAM User (for IAM Access Keys authentication only)',
         type: 'secret',
-        required: true
+        required: false,
+        advanced: false
       },
       {
         name: 'LEX_REGION',

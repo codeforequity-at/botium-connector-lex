@@ -51,6 +51,9 @@ _Already integrated into Botium Box, no setup required_
 
 ## Connecting Amazon Lex to Botium
 
+There are two possibilities to connect to Amazon Lex:
+
+### Connect with Amazon Access Keys
 You have to create an **IAM user** to enable Botium to access the Amazon Lex API.
 
 * [Create an IAM user](https://console.aws.amazon.com/iam/) (see [here](https://docs.aws.amazon.com/de_de/IAM/latest/UserGuide/id_users_create.html) for help)
@@ -59,7 +62,16 @@ You have to create an **IAM user** to enable Botium to access the Amazon Lex API
 * Choose _Attach existing policies to user directly_ to give permissions _AmazonLexFullAccess_
   * Feel free to use finer grained policies if you know what you are doing, 
   or read [Authentication and Access Control for Amazon Lex](https://docs.aws.amazon.com/lex/latest/dg/auth-and-access-control.html)
-    
+
+### Connect with Assuming Amazon IAM Role
+
+* [Create an IAM Role](https://console.aws.amazon.com/iam/) (see [here](https://docs.aws.amazon.com/de_de/IAM/latest/UserGuide/id_roles_create_for-service.html))
+  * Choose _Attach existing policies to user directly_ to give permissions _AmazonLexFullAccess_
+    * Feel free to use finer grained policies if you know what you are doing, 
+    or read [Authentication and Access Control for Amazon Lex](https://docs.aws.amazon.com/lex/latest/dg/auth-and-access-control.html)
+  * Add a trust policy (see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html))
+    * The external Id has to to be provided as Capability
+
 Create a botium.json with 
 * Amazon region where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
 * access key and secret of IAM user,
@@ -73,6 +85,9 @@ Create a botium.json with
       "PROJECTNAME": "<whatever>",
       "CONTAINERMODE": "lex",
       "LEX_REGION": "xxx",
+      "LEX_AUTH_MODE": "xxx",
+      "LEX_ROLE_ARN": "xxx",
+      "LEX_ROLE_EXTERNAL_ID": "xxx",
       "LEX_ACCESS_KEY_ID": "xxx",
       "LEX_SECRET_ACCESS_KEY": "xxx",
       "LEX_PROJECT_NAME": "xxx",
@@ -156,6 +171,13 @@ Set the capability __CONTAINERMODE__ to __lex__ to activate this connector.
 _Default: V1_
 
 V1 or V2
+
+
+"LEX_AUTH_MODE": "xxx",
+      "LEX_ROLE_ARN": "xxx",
+      "LEX_ROLE_EXTERNAL_ID": "xxx",
+### LEX_AUTH_MODE
+
 
 ### LEX_ACCESS_KEY_ID
 See Amazon IAM user
