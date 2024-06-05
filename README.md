@@ -71,6 +71,7 @@ You have to create an **IAM user** to enable Botium to access the Amazon Lex API
     or read [Authentication and Access Control for Amazon Lex](https://docs.aws.amazon.com/lex/latest/dg/auth-and-access-control.html)
   * Add a trust policy (see [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html))
     * The external Id has to to be provided as Capability
+  * The Role ARN has to to be provided as Capability
 
 Create a botium.json with 
 * Amazon region where you have created your bot. See [Amazon Lex Console](https://console.aws.amazon.com/lex)
