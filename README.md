@@ -173,18 +173,20 @@ _Default: V1_
 
 V1 or V2
 
-
-"LEX_AUTH_MODE": "xxx",
-      "LEX_ROLE_ARN": "xxx",
-      "LEX_ROLE_EXTERNAL_ID": "xxx",
 ### LEX_AUTH_MODE
+See Connecting Amazon Lex to Botium
 
+### LEX_ROLE_ARN
+See Connecting Amazon Lex to Botium
+
+### LEX_ROLE_EXTERNAL_ID
+See Connecting Amazon Lex to Botium
 
 ### LEX_ACCESS_KEY_ID
-See Amazon IAM user
+See Connecting Amazon Lex to Botium
 
 ### LEX_SECRET_ACCESS_KEY
-See Amazon IAM user
+See Connecting Amazon Lex to Botium
 
 ### LEX_REGION
 Amazon region code where you have created your bot. [Amazon Lex V1 Console](https://console.aws.amazon.com/lex)/[Amazon Lex V2 Console](https://console.aws.amazon.com/lexv2).
