@@ -45,7 +45,7 @@ const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
     const params = {
       RoleArn: roleArn,
       ExternalId: roleExternalId,
-      RoleSessionName: `be-descriptibe-here-${timestamp}`
+      RoleSessionName: `botium-session-lex-${timestamp}`
     }
     sts.assumeRole(params, (err, data) => {
       if (err) reject(err)
