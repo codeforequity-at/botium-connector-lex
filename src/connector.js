@@ -227,7 +227,7 @@ class BotiumConnectorLex {
             incomprehension: i0.intent.name === 'FallbackIntent'
           }
           if (i0.intent.slots) {
-            structuredResponse.nlp.entities = Object.entries(i0.intent.slots).filter(([name, value]) => value != null).map(([name, value]) => { return { name, value: value.value.interpretedValue || value.value.originalValue } })
+            structuredResponse.nlp.entities = Object.entries(i0.intent.slots).filter(([name, value]) => value != null).map(([name, value]) => { return { name, value: value?.value?.interpretedValue || value?.value?.originalValue } })
           } else {
             structuredResponse.nlp.entities = []
           }
