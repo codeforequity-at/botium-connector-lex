@@ -286,6 +286,7 @@ class BotiumConnectorLex {
           console.log('************************CustomPayload********************', message.content)
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
+            console.log('************************jsonContent********************', jsonContent)
             if (
               jsonContent.success && jsonContent.templateType &&
               jsonContent.templateType === 'ListPicker'
