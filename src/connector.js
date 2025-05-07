@@ -288,10 +288,10 @@ class BotiumConnectorLex {
             const jsonContent = this.convertToJson(message.content)
             console.log('************************jsonContent********************', jsonContent)
             if (
-              jsonContent.success && jsonContent.templateType &&
-              jsonContent.templateType === 'ListPicker'
+              jsonContent.success && jsonContent.data.templateType &&
+              jsonContent.data.templateType === 'ListPicker'
             ) {
-              const { content } = jsonContent.data
+              const { content } = jsonContent.data.data
               console.log('************************Content********************', content)
               structuredResponse.messageText = content.title
               structuredResponse.buttons = content.elements.map(item => {
