@@ -214,6 +214,14 @@ class BotiumConnectorLex {
   }
 
   convertToJson (data) {
+    if (typeof data === 'object' && data !== null) {
+      // If it's already a JSON object, return it as is
+      return {
+        success: true,
+        data
+      }
+    }
+
     try {
       const json = JSON.parse(data)
       return {
