@@ -213,6 +213,20 @@ class BotiumConnectorLex {
     setTimeout(() => this.queueBotSays(structuredResponse), 0)
   }
 
+  convertToJson (data) {
+    try {
+      const json = JSON.parse(data)
+      return {
+        success: true, data: json
+      }
+    } catch (e) {
+      return {
+        success: false,
+        error: e
+      }
+    }
+  }
+
   _handleResponseV2 (data) {
     debug(`Lex V2 answered: ${JSON.stringify(_.omit(data, ['audioStream']), null, 2)}`)
     this.sessionState = data.sessionState
@@ -260,8 +274,27 @@ class BotiumConnectorLex {
             image: (message.imageResponseCard.imageUrl && { mediaUri: message.imageResponseCard.imageUrl }) || null,
             buttons: (message.imageResponseCard.buttons && message.imageResponseCard.buttons.map(b => ({ text: b.text, payload: b.value }))) || []
           }]
+        } else if (message.contentType === 'CustomPayload') {
+          console.log('************************CustomPayload********************', message.content)
+          if (message.content) {
+            const jsonContent = this.convertToJson(message.content)
+            if (
+              jsonContent.success && jsonContent.templateType &&
+              jsonContent.templateType === 'ListPicker'
+            ) {
+              const { content } = jsonContent.data
+              console.log('************************Content********************', content)
+              structuredResponse.messageText = content.title
+              structuredResponse.buttons = content.elements.map(item => {
+                return {
+                  text: item.title,
+                  payload: item.value || null
+                }
+              })
+            }
+          }
         }
-
+        console.log('************************structuredResponse********************', structuredResponse)
         const contentType = this.caps[Capabilities.LEX_ACCEPT]
         if (data.audioStream && !(contentType.startsWith('text'))) {
           let ext = null
