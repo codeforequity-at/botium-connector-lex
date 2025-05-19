@@ -357,6 +357,10 @@ class BotiumConnectorLex {
           requestAttributes: this.requestAttributes
         }
 
+    if (params.sessionState && params.sessionState.dialogAction) {
+      delete params.sessionState.dialogAction
+    }
+
     if (msg.SET_LEX_SESSION_ATTRIBUTE) {
       if (this._isV1()) {
         params.sessionAttributes = Object.assign({}, params.sessionAttributes, msg.SET_LEX_SESSION_ATTRIBUTE)
