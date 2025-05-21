@@ -283,16 +283,13 @@ class BotiumConnectorLex {
             buttons: (message.imageResponseCard.buttons && message.imageResponseCard.buttons.map(b => ({ text: b.text, payload: b.value }))) || []
           }]
         } else if (message.contentType === 'CustomPayload') {
-          console.log('************************CustomPayload********************', message.content)
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
-            console.log('************************jsonContent********************', jsonContent)
             if (
               jsonContent.success && jsonContent.data.templateType &&
               jsonContent.data.templateType === 'ListPicker'
             ) {
               const { content } = jsonContent.data.data
-              console.log('************************Content********************', content)
               structuredResponse.messageText = content.title
               structuredResponse.buttons = content.elements.map(item => {
                 return {
@@ -303,7 +300,6 @@ class BotiumConnectorLex {
             }
           }
         }
-        console.log('************************structuredResponse********************', structuredResponse)
         const contentType = this.caps[Capabilities.LEX_ACCEPT]
         if (data.audioStream && !(contentType.startsWith('text'))) {
           let ext = null
