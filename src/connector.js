@@ -22,7 +22,8 @@ const Capabilities = {
   LEX_REQUEST_ATTRIBUTES: 'LEX_REQUEST_ATTRIBUTES',
   LEX_ACCEPT: 'LEX_ACCEPT',
   LEX_CONTENTTYPE_TEXT: 'LEX_CONTENTTYPE_TEXT',
-  LEX_CONTENTTYPE_AUDIO: 'LEX_CONTENTTYPE_AUDIO'
+  LEX_CONTENTTYPE_AUDIO: 'LEX_CONTENTTYPE_AUDIO',
+  LEX_ADD_DIALOG_ACTION: 'LEX_SHOW_DIALOG_ACTION'
 }
 
 const Defaults = {
@@ -31,7 +32,8 @@ const Defaults = {
   [Capabilities.LEX_LOCALE]: 'en_US',
   [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
   [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8',
-  [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1'
+  [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1',
+  [Capabilities.LEX_ADD_DIALOG_ACTION]: false
 }
 
 const gzipAndBase64 = (obj) => zlib.gzipSync(JSON.stringify(obj)).toString('base64')
@@ -283,16 +285,13 @@ class BotiumConnectorLex {
             buttons: (message.imageResponseCard.buttons && message.imageResponseCard.buttons.map(b => ({ text: b.text, payload: b.value }))) || []
           }]
         } else if (message.contentType === 'CustomPayload') {
-          console.log('************************CustomPayload********************', message.content)
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
-            console.log('************************jsonContent********************', jsonContent)
             if (
               jsonContent.success && jsonContent.data.templateType &&
               jsonContent.data.templateType === 'ListPicker'
             ) {
               const { content } = jsonContent.data.data
-              console.log('************************Content********************', content)
               structuredResponse.messageText = content.title
               structuredResponse.buttons = content.elements.map(item => {
                 return {
@@ -303,7 +302,6 @@ class BotiumConnectorLex {
             }
           }
         }
-        console.log('************************structuredResponse********************', structuredResponse)
         const contentType = this.caps[Capabilities.LEX_ACCEPT]
         if (data.audioStream && !(contentType.startsWith('text'))) {
           let ext = null
@@ -357,7 +355,8 @@ class BotiumConnectorLex {
           requestAttributes: this.requestAttributes
         }
 
-    if (params.sessionState && params.sessionState.dialogAction) {
+    // Remove dialogAction from sessionState to allow Lex to determine the next step automatically
+    if (params.sessionState && params.sessionState.dialogAction && this.caps[Capabilities.LEX_ADD_DIALOG_ACTION] === false) {
       delete params.sessionState.dialogAction
     }
 
