@@ -15,7 +15,7 @@ const getCustomPayloadTypes = () => {
   if (envTypes && envTypes.trim()) {
     return envTypes.split(',').map(type => type.trim()).filter(type => type.length > 0)
   }
-  return ['ListPicker'] 
+  return ['ListPicker']
 }
 
 const Capabilities = {
