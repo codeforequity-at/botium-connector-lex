@@ -5,6 +5,18 @@ const randomize = require('randomatic')
 const zlib = require('zlib')
 const AWS = require('aws-sdk')
 const debug = require('debug')('botium-connector-lex')
+const path = require('path')
+
+// Load environment variables with explicit path
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
+
+const getCustomPayloadTypes = () => {
+  const envTypes = process.env.CUSTOM_PAYLOAD_TYPES
+  if (envTypes && envTypes.trim()) {
+    return envTypes.split(',').map(type => type.trim()).filter(type => type.length > 0)
+  }
+  return ['ListPicker'] 
+}
 
 const Capabilities = {
   LEX_VERSION: 'LEX_VERSION',
@@ -287,9 +299,10 @@ class BotiumConnectorLex {
         } else if (message.contentType === 'CustomPayload') {
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
+            const customPayloadTypes = getCustomPayloadTypes()
             if (
               jsonContent.success && jsonContent.data.templateType &&
-              jsonContent.data.templateType === 'ListPicker'
+              customPayloadTypes.includes(jsonContent.data.templateType)
             ) {
               const { content } = jsonContent.data.data
               structuredResponse.messageText = content.title
