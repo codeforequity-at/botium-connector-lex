@@ -343,6 +343,14 @@ module.exports = {
           { key: 'audio/ogg', name: 'Ogg Vorbis Audio (*.ogg)' },
           { key: 'audio/pcm', name: 'PCM Audio (*.wav)' }
         ]
+      },
+      {
+        name: 'LEX_CUSTOM_VARIABLES',
+        label: 'Custom Payload Variables',
+        description: 'Comma-separated list of custom payload template types to handle (e.g., ListPicker,CarouselPicker)',
+        type: 'string',
+        required: false,
+        advanced: true
       }
     ],
     actions: [

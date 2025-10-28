@@ -23,7 +23,8 @@ const Capabilities = {
   LEX_ACCEPT: 'LEX_ACCEPT',
   LEX_CONTENTTYPE_TEXT: 'LEX_CONTENTTYPE_TEXT',
   LEX_CONTENTTYPE_AUDIO: 'LEX_CONTENTTYPE_AUDIO',
-  LEX_ADD_DIALOG_ACTION: 'LEX_SHOW_DIALOG_ACTION'
+  LEX_ADD_DIALOG_ACTION: 'LEX_SHOW_DIALOG_ACTION',
+  LEX_CUSTOM_VARIABLES: 'LEX_CUSTOM_VARIABLES'
 }
 
 const Defaults = {
@@ -33,7 +34,8 @@ const Defaults = {
   [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
   [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8',
   [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1',
-  [Capabilities.LEX_ADD_DIALOG_ACTION]: false
+  [Capabilities.LEX_ADD_DIALOG_ACTION]: false,
+  [Capabilities.LEX_CUSTOM_VARIABLES]: 'ListPicker'
 }
 
 const gzipAndBase64 = (obj) => zlib.gzipSync(JSON.stringify(obj)).toString('base64')
@@ -287,9 +289,15 @@ class BotiumConnectorLex {
         } else if (message.contentType === 'CustomPayload') {
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
+            // Get custom payload types from capability
+            const customPayloadTypesStr = this.caps[Capabilities.LEX_CUSTOM_VARIABLES]
+            let customPayloadTypes = []
+            if (customPayloadTypesStr && typeof customPayloadTypesStr === 'string') {
+              customPayloadTypes = customPayloadTypesStr.split(',').map(type => type.trim()).filter(type => type.length > 0)
+            }
             if (
               jsonContent.success && jsonContent.data.templateType &&
-              jsonContent.data.templateType === 'ListPicker'
+              customPayloadTypes.includes(jsonContent.data.templateType)
             ) {
               const { content } = jsonContent.data.data
               structuredResponse.messageText = content.title
