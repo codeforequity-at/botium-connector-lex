@@ -5,18 +5,6 @@ const randomize = require('randomatic')
 const zlib = require('zlib')
 const AWS = require('aws-sdk')
 const debug = require('debug')('botium-connector-lex')
-const path = require('path')
-
-// Load environment variables with explicit path
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
-
-const getCustomPayloadTypes = () => {
-  const envTypes = process.env.CUSTOM_PAYLOAD_TYPES
-  if (envTypes && envTypes.trim()) {
-    return envTypes.split(',').map(type => type.trim()).filter(type => type.length > 0)
-  }
-  return ['ListPicker']
-}
 
 const Capabilities = {
   LEX_VERSION: 'LEX_VERSION',
@@ -35,7 +23,8 @@ const Capabilities = {
   LEX_ACCEPT: 'LEX_ACCEPT',
   LEX_CONTENTTYPE_TEXT: 'LEX_CONTENTTYPE_TEXT',
   LEX_CONTENTTYPE_AUDIO: 'LEX_CONTENTTYPE_AUDIO',
-  LEX_ADD_DIALOG_ACTION: 'LEX_SHOW_DIALOG_ACTION'
+  LEX_ADD_DIALOG_ACTION: 'LEX_SHOW_DIALOG_ACTION',
+  LEX_CUSTOM_VARIABLES: 'LEX_CUSTOM_VARIABLES'
 }
 
 const Defaults = {
@@ -45,7 +34,8 @@ const Defaults = {
   [Capabilities.LEX_ACCEPT]: 'text/plain; charset=utf-8',
   [Capabilities.LEX_CONTENTTYPE_TEXT]: 'text/plain; charset=utf-8',
   [Capabilities.LEX_CONTENTTYPE_AUDIO]: 'audio/l16; rate=16000; channels=1',
-  [Capabilities.LEX_ADD_DIALOG_ACTION]: false
+  [Capabilities.LEX_ADD_DIALOG_ACTION]: false,
+  [Capabilities.LEX_CUSTOM_VARIABLES]: 'ListPicker'
 }
 
 const gzipAndBase64 = (obj) => zlib.gzipSync(JSON.stringify(obj)).toString('base64')
@@ -299,7 +289,12 @@ class BotiumConnectorLex {
         } else if (message.contentType === 'CustomPayload') {
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
-            const customPayloadTypes = getCustomPayloadTypes()
+            // Get custom payload types from capability
+            const customPayloadTypesStr = this.caps[Capabilities.LEX_CUSTOM_VARIABLES]
+            let customPayloadTypes = []
+            if (customPayloadTypesStr && typeof customPayloadTypesStr === 'string') {
+              customPayloadTypes = customPayloadTypesStr.split(',').map(type => type.trim()).filter(type => type.length > 0)
+            }
             if (
               jsonContent.success && jsonContent.data.templateType &&
               customPayloadTypes.includes(jsonContent.data.templateType)
