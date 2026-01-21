@@ -443,6 +443,7 @@ class BotiumConnectorLex {
         }
       })
     } else {
+      const wantsAudioResponse = !this.caps[Capabilities.LEX_ACCEPT].startsWith('text')
       if (this._isV1()) {
         params.inputText = msg.messageText
       } else {
@@ -459,6 +460,29 @@ class BotiumConnectorLex {
                 this._handleResponseV1(data)
               } catch (err) {
                 return reject(new Error(`Lex V1 error: ${err.message}`))
+              }
+            }
+            resolve()
+          })
+        } else if (wantsAudioResponse) {
+          params.responseContentType = this.caps[Capabilities.LEX_ACCEPT]
+          params.requestContentType = this.caps[Capabilities.LEX_CONTENTTYPE_TEXT]
+          params.inputStream = Buffer.from(msg.messageText || '', 'utf8')
+          params.sessionState = gzipAndBase64(params.sessionState)
+          params.requestAttributes = gzipAndBase64(params.requestAttributes)
+          delete params.text
+          this.client.recognizeUtterance(params, (err, data) => {
+            if (err) return reject(new Error(`Lex V2 answered with error: ${err.message}`))
+            if (data) {
+              try {
+                if (data.messages) data.messages = base64AndUnzip(data.messages)
+                if (data.interpretations) data.interpretations = base64AndUnzip(data.interpretations)
+                if (data.sessionState) data.sessionState = base64AndUnzip(data.sessionState)
+                if (data.requestAttributes) data.requestAttributes = base64AndUnzip(data.requestAttributes)
+                if (data.inputTranscript) data.inputTranscript = base64AndUnzip(data.inputTranscript)
+                this._handleResponseV2(data)
+              } catch (err) {
+                return reject(new Error(`Lex V2 error: ${err.message}`))
               }
             }
             resolve()
