@@ -351,6 +351,14 @@ module.exports = {
         type: 'string',
         required: false,
         advanced: true
+      },
+      {
+        name: 'LEX_BOT_CHAIN_ENABLED',
+        label: 'Enable Bot Chaining',
+        description: 'Routes to secondary bots when primary bot signals handoff via nextStep=RouteToBot. Lex V2 only.',
+        type: 'boolean',
+        required: false,
+        advanced: true
       }
     ],
     actions: [
