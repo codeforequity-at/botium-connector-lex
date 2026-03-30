@@ -336,10 +336,18 @@ class BotiumConnectorLex {
     }
 
     if (content.elements && Array.isArray(content.elements)) {
-      result.buttons = content.elements.map(item => ({
-        text: item.title || item.data?.content?.title || item.templateIdentifier || null,
-        payload: item.value || null
-      }))
+      result.buttons = content.elements.flatMap(item => {
+        if (item.data?.content?.elements && Array.isArray(item.data.content.elements)) {
+          return item.data.content.elements.map(innerItem => ({
+            text: innerItem.title || null,
+            payload: innerItem.value || null
+          }))
+        }
+        return {
+          text: item.title || item.data?.content?.title || item.templateIdentifier || null,
+          payload: item.value || null
+        }
+      })
     }
 
     debug('Extracted message from session attributes: %s', result.messageText)
@@ -448,9 +456,15 @@ class BotiumConnectorLex {
             ) {
               const { content } = jsonContent.data.data
               structuredResponse.messageText = content.title
-              structuredResponse.buttons = content.elements.map(item => {
+              structuredResponse.buttons = content.elements.flatMap(item => {
+                if (item.data?.content?.elements && Array.isArray(item.data.content.elements)) {
+                  return item.data.content.elements.map(innerItem => ({
+                    text: innerItem.title || null,
+                    payload: innerItem.value || null
+                  }))
+                }
                 return {
-                  text: item.title,
+                  text: item.title || null,
                   payload: item.value || null
                 }
               })
