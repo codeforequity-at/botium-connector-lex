@@ -1,8 +1,10 @@
-const _ = require('lodash')
-const AWS = require('aws-sdk')
-const randomize = require('randomatic')
-const botium = require('botium-core')
-const debug = require('debug')('botium-connector-lex-export')
+import _ from 'lodash'
+import AWS from 'aws-sdk'
+import randomize from 'randomatic'
+import botium from 'botium-core'
+import Debug from 'debug'
+
+const debug = Debug('botium-connector-lex-export')
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -175,32 +177,31 @@ const exportIntents = async ({ caps, uploadmode, newBotName, newBotAliasName, wa
   }
 }
 
-module.exports = {
-  exportHandler: ({ caps, uploadmode, newBotName, newBotAliasName, waitforready, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportIntents({ caps, uploadmode, newBotName, newBotAliasName, waitforready, ...rest }, { convos, utterances }, { statusCallback }),
-  exportArgs: {
-    caps: {
-      describe: 'Capabilities',
-      type: 'json',
-      skipCli: true
-    },
-    uploadmode: {
-      describe: 'Copy Lex Bot and create new intent version with user examples, or append user examples to existing intents only',
-      choices: ['copy', 'append'],
-      default: 'copy'
-    },
-    newBotName: {
-      describe: 'New Lex Bot name (if not given will be generated)',
-      type: 'string'
-    },
-    newBotAliasName: {
-      describe: 'New Lex Bot alias',
-      type: 'string',
-      default: 'botiumdev'
-    },
-    waitforready: {
-      describe: 'Wait until Lex Bot is ready',
-      type: 'boolean',
-      default: false
-    }
+export const exportHandler = ({ caps, uploadmode, newBotName, newBotAliasName, waitforready, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportIntents({ caps, uploadmode, newBotName, newBotAliasName, waitforready, ...rest }, { convos, utterances }, { statusCallback })
+
+export const exportArgs = {
+  caps: {
+    describe: 'Capabilities',
+    type: 'json',
+    skipCli: true
+  },
+  uploadmode: {
+    describe: 'Copy Lex Bot and create new intent version with user examples, or append user examples to existing intents only',
+    choices: ['copy', 'append'],
+    default: 'copy'
+  },
+  newBotName: {
+    describe: 'New Lex Bot name (if not given will be generated)',
+    type: 'string'
+  },
+  newBotAliasName: {
+    describe: 'New Lex Bot alias',
+    type: 'string',
+    default: 'botiumdev'
+  },
+  waitforready: {
+    describe: 'Wait until Lex Bot is ready',
+    type: 'boolean',
+    default: false
   }
 }

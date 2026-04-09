@@ -1,7 +1,7 @@
-require('dotenv').config()
-const assert = require('chai').assert
-const Connector = require('../../src/connector')
-const { readCaps } = require('./helper')
+import 'dotenv/config'
+import { assert } from 'chai'
+import BotiumConnectorLex from '../../src/connector.js'
+import { readCaps } from './helper.js'
 
 describe('connector', function () {
   beforeEach(async function () {
@@ -12,7 +12,7 @@ describe('connector', function () {
     const queueBotSays = (botMsg) => {
       this.botMsgPromiseResolve(botMsg)
     }
-    this.connector = new Connector({ queueBotSays, caps: this.caps })
+    this.connector = new BotiumConnectorLex({ queueBotSays, caps: this.caps })
     await this.connector.Validate()
     await this.connector.Build()
     await this.connector.Start()

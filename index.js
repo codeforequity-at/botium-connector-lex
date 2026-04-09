@@ -1,9 +1,9 @@
-const AWS = require('aws-sdk')
-const BotiumConnectorLex = require('./src/connector')
-const { extractIntentUtterances, trainIntentUtterances, cleanupIntentUtterances } = require('./src/nlp')
-const { importHandler, importArgs } = require('./src/import')
-const { exportHandler, exportArgs } = require('./src/export')
-const { paginatedCall } = require('./src/slottypes')
+import AWS from 'aws-sdk'
+import BotiumConnectorLex from './src/connector.js'
+import { extractIntentUtterances, trainIntentUtterances, cleanupIntentUtterances } from './src/nlp.js'
+import { importHandler, importArgs } from './src/import.js'
+import { exportHandler, exportArgs } from './src/export.js'
+import { paginatedCall } from './src/slottypes.js'
 
 const sts = new AWS.STS()
 
@@ -28,7 +28,7 @@ const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
   })
 }
 
-module.exports = {
+export default {
   PluginVersion: 1,
   PluginClass: BotiumConnectorLex,
   Import: {
