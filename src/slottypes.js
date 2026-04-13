@@ -1,11 +1,15 @@
-const _ = require('lodash')
-const debug = require('debug')('botium-connector-lex-slottypes')
+import _ from 'lodash'
+import Debug from 'debug'
+import { createRequire } from 'module'
+import { Defaults } from './connector.js'
 
-const { Defaults } = require('./connector')
+const debug = Debug('botium-connector-lex-slottypes')
+
+const require = createRequire(import.meta.url)
 const SLOT_TYPE_SAMPLES = require('../data/slottypesamples.json')
 const BUILTIN_SLOT_TYPE_SAMPLES = require('../data/builtinslottypesamples.json')
 
-const loadSlotTypes = (language) => {
+export const loadSlotTypes = (language) => {
   const slotTypes = {}
 
   const builtinLangKey = Object.keys(BUILTIN_SLOT_TYPE_SAMPLES).find(l => language.startsWith(l))
@@ -21,7 +25,7 @@ const loadSlotTypes = (language) => {
   return slotTypes
 }
 
-const paginatedCall = async (fnc, extract, args = {}, aggregateddata = [], context = { page: 0 }) => {
+export const paginatedCall = async (fnc, extract, args = {}, aggregateddata = [], context = { page: 0 }) => {
   debug(`Reading page #${context.page}`)
   const data = await fnc({ maxResults: 50, ...args }).promise()
   if (data.nextToken) {
@@ -31,7 +35,7 @@ const paginatedCall = async (fnc, extract, args = {}, aggregateddata = [], conte
   }
 }
 
-const loadCustomSlotTypes = async (client, caps) => {
+export const loadCustomSlotTypes = async (client, caps) => {
   const customSlotTypes = {}
   if (caps.LEX_VERSION === 'V1') {
     const slotTypesShort = await paginatedCall(client.getSlotTypes.bind(client), d => d.slotTypes, {})
@@ -60,7 +64,7 @@ const loadCustomSlotTypes = async (client, caps) => {
   return customSlotTypes
 }
 
-const expandSlotType = (sample, slotName, slotSamples) => {
+export const expandSlotType = (sample, slotName, slotSamples) => {
   const result = []
   slotSamples.forEach(ss => {
     result.push(sample.replace(`{${slotName}}`, ss))
@@ -69,18 +73,10 @@ const expandSlotType = (sample, slotName, slotSamples) => {
 }
 
 const reSlots = /{(.*?)}/g
-const extractSlotNames = (sample) => {
+export const extractSlotNames = (sample) => {
   const reMatches = (sample.match(reSlots) || []).map(e => RegExp(reSlots.source, reSlots.flags).exec(e))
   if (reMatches.length > 0) {
     return _.sortBy(_.uniq(reMatches.map(r => r[1])))
   }
   return []
-}
-
-module.exports = {
-  paginatedCall,
-  loadSlotTypes,
-  loadCustomSlotTypes,
-  expandSlotType,
-  extractSlotNames
 }

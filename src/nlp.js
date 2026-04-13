@@ -1,10 +1,12 @@
-const _ = require('lodash')
-const AWS = require('aws-sdk')
-const randomize = require('randomatic')
-const botium = require('botium-core')
-const debug = require('debug')('botium-connector-lex-nlp')
+import _ from 'lodash'
+import AWS from 'aws-sdk'
+import randomize from 'randomatic'
+import botium from 'botium-core'
+import Debug from 'debug'
 
-const { loadSlotTypes, loadCustomSlotTypes, expandSlotType } = require('./slottypes')
+import { loadSlotTypes, loadCustomSlotTypes, expandSlotType } from './slottypes.js'
+
+const debug = Debug('botium-connector-lex-nlp')
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -13,7 +15,7 @@ const getCaps = (caps) => {
   return result
 }
 
-const extractIntentUtterances = async ({ caps }) => {
+export const extractIntentUtterances = async ({ caps }) => {
   const driver = new botium.BotDriver(getCaps(caps))
   if (driver.caps.LEX_VERSION !== 'V1') throw new Error('Only supported for Lex Version 1')
 
@@ -76,7 +78,7 @@ const extractIntentUtterances = async ({ caps }) => {
   }
 }
 
-const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
+export const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   const driver = new botium.BotDriver(getCaps(caps))
   if (driver.caps.LEX_VERSION !== 'V1') throw new Error('Only supported for Lex Version 1')
 
@@ -187,7 +189,7 @@ const trainIntentUtterances = async ({ caps }, intents, { origBot }) => {
   }
 }
 
-const cleanupIntentUtterances = async ({ caps }, { caps: trainCaps, tempBot, tempBotAlias }) => {
+export const cleanupIntentUtterances = async ({ caps }, { caps: trainCaps, tempBot, tempBotAlias }) => {
   const driver = new botium.BotDriver(getCaps(Object.assign(caps || {}, trainCaps || {})))
 
   const client = new AWS.LexModelBuildingService({
@@ -237,10 +239,4 @@ const cleanupIntentUtterances = async ({ caps }, { caps: trainCaps, tempBot, tem
       }
     }
   }
-}
-
-module.exports = {
-  extractIntentUtterances,
-  trainIntentUtterances,
-  cleanupIntentUtterances
 }

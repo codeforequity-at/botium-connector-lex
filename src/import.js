@@ -1,12 +1,13 @@
-const AWS = require('aws-sdk')
-const debug = require('debug')('botium-connector-lex-import')
+import AWS from 'aws-sdk'
+import Debug from 'debug'
 
-const Connector = require('./connector')
-const { Defaults } = Connector
-const { paginatedCall, loadSlotTypes, loadCustomSlotTypes, extractSlotNames, expandSlotType } = require('./slottypes')
+import BotiumConnectorLex, { Defaults } from './connector.js'
+import { paginatedCall, loadSlotTypes, loadCustomSlotTypes, extractSlotNames, expandSlotType } from './slottypes.js'
+
+const debug = Debug('botium-connector-lex-import')
 
 const importIntents = async ({ caps, buildconvos, buildentities }) => {
-  const connector = new Connector({ caps })
+  const connector = new BotiumConnectorLex({ caps })
   await connector.Validate()
   caps = connector.caps
 
@@ -172,23 +173,22 @@ const importIntents = async ({ caps, buildconvos, buildentities }) => {
   return { convos, utterances }
 }
 
-module.exports = {
-  importHandler: ({ caps, buildconvos, ...rest } = {}) => importIntents({ caps, buildconvos, ...rest }),
-  importArgs: {
-    caps: {
-      describe: 'Capabilities',
-      type: 'json',
-      skipCli: true
-    },
-    buildconvos: {
-      describe: 'Build convo files with intent asserters',
-      type: 'boolean',
-      default: true
-    },
-    buildentities: {
-      describe: 'Add entity asserters to convo files',
-      type: 'boolean',
-      default: false
-    }
+export const importHandler = ({ caps, buildconvos, ...rest } = {}) => importIntents({ caps, buildconvos, ...rest })
+
+export const importArgs = {
+  caps: {
+    describe: 'Capabilities',
+    type: 'json',
+    skipCli: true
+  },
+  buildconvos: {
+    describe: 'Build convo files with intent asserters',
+    type: 'boolean',
+    default: true
+  },
+  buildentities: {
+    describe: 'Add entity asserters to convo files',
+    type: 'boolean',
+    default: false
   }
 }

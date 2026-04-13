@@ -1,4 +1,8 @@
-module.exports.readCaps = () => {
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
+
+export const readCaps = () => {
   // botium caps should come from env variable (.env) or botium.json. Priority is not defined if booth are filled
   let botiumJson
   try {

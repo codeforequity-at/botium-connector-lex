@@ -1,12 +1,14 @@
-const util = require('util')
-const _ = require('lodash')
-const mime = require('mime-types')
-const randomize = require('randomatic')
-const zlib = require('zlib')
-const AWS = require('aws-sdk')
-const debug = require('debug')('botium-connector-lex')
+import util from 'util'
+import _ from 'lodash'
+import mime from 'mime-types'
+import randomize from 'randomatic'
+import zlib from 'zlib'
+import AWS from 'aws-sdk'
+import Debug from 'debug'
 
-const Capabilities = {
+const debug = Debug('botium-connector-lex')
+
+export const Capabilities = {
   LEX_VERSION: 'LEX_VERSION',
   LEX_REGION: 'LEX_REGION',
   LEX_AUTH_MODE: 'LEX_AUTH_MODE',
@@ -28,7 +30,7 @@ const Capabilities = {
   LEX_BOT_CHAIN_ENABLED: 'LEX_BOT_CHAIN_ENABLED'
 }
 
-const Defaults = {
+export const Defaults = {
   [Capabilities.LEX_AUTH_MODE]: 'IAM_KEYS',
   [Capabilities.LEX_VERSION]: 'V1',
   [Capabilities.LEX_LOCALE]: 'en_US',
@@ -254,7 +256,6 @@ class BotiumConnectorLex {
 
   convertToJson (data) {
     if (typeof data === 'object' && data !== null) {
-      // If it's already a JSON object, return it as is
       return {
         success: true,
         data
@@ -283,21 +284,18 @@ class BotiumConnectorLex {
   _extractMessageFromSessionAttributes (sessionAttributes) {
     if (!sessionAttributes) return null
 
-    // Try to get message from lastSlot or lexSlotPrompt (common attribute names)
     const slotPromptValue = sessionAttributes.lastSlot || sessionAttributes.lexSlotPrompt
 
     if (!slotPromptValue) return null
 
     const jsonContent = this.convertToJson(slotPromptValue)
     if (!jsonContent.success) {
-      // Not JSON — treat as plain text message
       debug('Session attribute is plain text: %s', slotPromptValue)
       return { messageText: slotPromptValue }
     }
 
     const payload = jsonContent.data
 
-    // Handle lexSlotPrompt format (wrapped in contentType/content)
     if (payload.contentType && payload.content) {
       const innerContent = this.convertToJson(payload.content)
       if (innerContent.success) {
@@ -305,7 +303,6 @@ class BotiumConnectorLex {
       }
     }
 
-    // Handle direct template format (templateType/data/content)
     return this._parseCustomPayloadTemplate(payload)
   }
 
@@ -364,7 +361,6 @@ class BotiumConnectorLex {
     if (!this._isChainMode()) return false
     if (!sessionAttributes) return false
 
-    // Check for routing indicator (nextStep === 'RouteToBot')
     const shouldRoute = sessionAttributes.nextStep === 'RouteToBot'
     debug('Route check: nextStep = %s -> %s', sessionAttributes.nextStep, shouldRoute)
     return shouldRoute
@@ -379,7 +375,6 @@ class BotiumConnectorLex {
   _getSecondaryBotDetails (sessionAttributes) {
     if (!sessionAttributes) return null
 
-    // Look for ARN in session attributes
     const arn = sessionAttributes.ARN
 
     if (!arn) {
@@ -444,7 +439,6 @@ class BotiumConnectorLex {
         } else if (message.contentType === 'CustomPayload') {
           if (message.content) {
             const jsonContent = this.convertToJson(message.content)
-            // Get custom payload types from capability
             const customPayloadTypesStr = this.caps[Capabilities.LEX_CUSTOM_VARIABLES]
             let customPayloadTypes = []
             if (customPayloadTypesStr && typeof customPayloadTypesStr === 'string') {
@@ -495,7 +489,6 @@ class BotiumConnectorLex {
         setTimeout(() => this.queueBotSays(structuredResponse), 0)
       }
     } else {
-      // No messages in response - try to extract from session attributes (chain mode scenario)
       const sessionAttrs = data.sessionState?.sessionAttributes
 
       if (this._isChainMode() && sessionAttrs) {
@@ -514,7 +507,6 @@ class BotiumConnectorLex {
         }
       }
 
-      // Fallback: queue response without message text
       setTimeout(() => this.queueBotSays(_extractNlp({
         sender: 'bot',
         nlp: {
@@ -618,14 +610,10 @@ class BotiumConnectorLex {
         debug('Chain mode: Routing indicated but no valid ARN found')
       }
 
-      // Update primary session state (we stay aware of primary's state)
       this.sessionState = response.sessionState
 
-      // Show the bot's response (messages[] like PlainText)
       this._handleResponseV2(response)
 
-      // When routing, session attributes may contain additional content
-      // (e.g. a Carousel/menu) that isn't in messages[]. Extract and show it.
       if (response.messages && response.messages.length > 0) {
         const extraMessage = this._extractMessageFromSessionAttributes(sessionAttrs)
         if (extraMessage) {
@@ -640,7 +628,6 @@ class BotiumConnectorLex {
         }
       }
     } else {
-      // No routing — this is a normal response from whichever bot we're talking to
       if (this.activeBot) {
         this.activeBotSessionState = response.sessionState
         debug('Chain mode: Response from secondary bot %s/%s (no further routing)',
@@ -656,7 +643,6 @@ class BotiumConnectorLex {
   async UserSays (msg) {
     debug('UserSays called')
 
-    // Use chain mode if enabled
     if (this._isChainMode()) {
       return this._userSaysChainMode(msg)
     }
@@ -678,7 +664,6 @@ class BotiumConnectorLex {
           requestAttributes: this.requestAttributes
         }
 
-    // Remove dialogAction from sessionState to allow Lex to determine the next step automatically
     if (params.sessionState && params.sessionState.dialogAction && this.caps[Capabilities.LEX_ADD_DIALOG_ACTION] === false) {
       delete params.sessionState.dialogAction
     }
@@ -835,6 +820,4 @@ class BotiumConnectorLex {
   }
 }
 
-module.exports = BotiumConnectorLex
-module.exports.Defaults = Defaults
-module.exports.Capabilities = Capabilities
+export default BotiumConnectorLex

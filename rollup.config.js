@@ -1,9 +1,8 @@
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
 
 export default {
   input: 'index.js',
+  external: (id) => !id.startsWith('.') && !id.startsWith('/') && !id.startsWith('\0'),
   output: [
     {
       file: 'dist/botium-connector-lex-es.js',
@@ -11,19 +10,13 @@ export default {
       sourcemap: true
     },
     {
-      file: 'dist/botium-connector-lex-cjs.js',
+      file: 'dist/botium-connector-lex-cjs.cjs',
       format: 'cjs',
+      exports: 'auto',
       sourcemap: true
     }
   ],
   plugins: [
-    commonjs({
-      exclude: 'node_modules/**'
-    }),
-    json(),
-    babel({
-      exclude: 'node_modules/**',
-      runtimeHelpers: true
-    })
+    json()
   ]
 }
