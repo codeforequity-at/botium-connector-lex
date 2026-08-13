@@ -6,6 +6,8 @@ import zlib from 'zlib'
 import AWS from 'aws-sdk'
 import Debug from 'debug'
 
+import { getAwsCredentials } from './auth.js'
+
 const debug = Debug('botium-connector-lex')
 
 export const Capabilities = {
@@ -63,29 +65,6 @@ const parseArnForBotDetails = (arn) => {
   return null
 }
 
-const sts = new AWS.STS()
-
-const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
-  return new Promise((resolve, reject) => {
-    const timestamp = (new Date()).getTime()
-    const params = {
-      RoleArn: roleArn,
-      ExternalId: roleExternalId,
-      RoleSessionName: `botium-session-lex-${timestamp}`
-    }
-    sts.assumeRole(params, (err, data) => {
-      if (err) reject(err)
-      else {
-        resolve({
-          accessKeyId: data.Credentials.AccessKeyId,
-          secretAccessKey: data.Credentials.SecretAccessKey,
-          sessionToken: data.Credentials.SessionToken
-        })
-      }
-    })
-  })
-}
-
 class BotiumConnectorLex {
   constructor ({ queueBotSays, caps }) {
     this.queueBotSays = queueBotSays
@@ -120,15 +99,7 @@ class BotiumConnectorLex {
   async Build () {
     debug('Build called')
 
-    const accessparams = this.caps[Capabilities.LEX_AUTH_MODE] === 'IAM_ROLE'
-      ? await getCrossAccountCredentials({
-        roleArn: this.caps[Capabilities.LEX_ROLE_ARN],
-        roleExternalId: this.caps[Capabilities.LEX_ROLE_EXTERNAL_ID]
-      })
-      : {
-          accessKeyId: this.caps[Capabilities.LEX_ACCESS_KEY_ID],
-          secretAccessKey: this.caps[Capabilities.LEX_SECRET_ACCESS_KEY]
-        }
+    const accessparams = await getAwsCredentials(this.caps)
 
     if (this._isV1()) {
       this.client = new AWS.LexRuntime({

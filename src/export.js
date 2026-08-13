@@ -4,6 +4,8 @@ import randomize from 'randomatic'
 import botium from 'botium-core'
 import Debug from 'debug'
 
+import { getAwsCredentials } from './auth.js'
+
 const debug = Debug('botium-connector-lex-export')
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -19,12 +21,12 @@ const exportIntents = async ({ caps, uploadmode, newBotName, newBotAliasName, wa
 
   const botName = driver.caps.LEX_PROJECT_NAME
   const botAlias = driver.caps.LEX_PROJECT_ALIAS
+  const accessparams = await getAwsCredentials(driver.caps)
 
   const client = new AWS.LexModelBuildingService({
     apiVersion: '2017-04-19',
     region: driver.caps.LEX_REGION,
-    accessKeyId: driver.caps.LEX_ACCESS_KEY_ID,
-    secretAccessKey: driver.caps.LEX_SECRET_ACCESS_KEY
+    ...accessparams
   })
 
   const bot = await client.getBot({

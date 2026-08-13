@@ -4,29 +4,7 @@ import { extractIntentUtterances, trainIntentUtterances, cleanupIntentUtterances
 import { importHandler, importArgs } from './src/import.js'
 import { exportHandler, exportArgs } from './src/export.js'
 import { paginatedCall } from './src/slottypes.js'
-
-const sts = new AWS.STS()
-
-const getCrossAccountCredentials = async ({ roleArn, roleExternalId }) => {
-  return new Promise((resolve, reject) => {
-    const timestamp = (new Date()).getTime()
-    const params = {
-      RoleArn: roleArn,
-      ExternalId: roleExternalId,
-      RoleSessionName: `botium-session-lex-${timestamp}`
-    }
-    sts.assumeRole(params, (err, data) => {
-      if (err) reject(err)
-      else {
-        resolve({
-          accessKeyId: data.Credentials.AccessKeyId,
-          secretAccessKey: data.Credentials.SecretAccessKey,
-          sessionToken: data.Credentials.SessionToken
-        })
-      }
-    })
-  })
-}
+import { getCrossAccountCredentials } from './src/auth.js'
 
 export default {
   PluginVersion: 1,

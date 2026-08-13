@@ -22,7 +22,7 @@
     "eslint": "eslint index.js bin/**/*.js src/**/*.js",
     "eslint-fix": "eslint --fix index.js bin/**/*.js src/**/*.js",
     "update-dependencies": "npm-check-updates -u --timeout 60000",
-    "test": "echo Just placeholder, no tests here yet",
+    "test": "mocha test/unit/**/*spec.js",
     "test-nightly": "mocha test/nightly/**/*spec.js"
   },
   "repository": {
