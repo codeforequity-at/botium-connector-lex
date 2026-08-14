@@ -2,6 +2,7 @@ import AWS from 'aws-sdk'
 import Debug from 'debug'
 
 import BotiumConnectorLex, { Defaults } from './connector.js'
+import { getAwsCredentials } from './auth.js'
 import { paginatedCall, loadSlotTypes, loadCustomSlotTypes, extractSlotNames, expandSlotType } from './slottypes.js'
 
 const debug = Debug('botium-connector-lex-import')
@@ -14,19 +15,18 @@ const importIntents = async ({ caps, buildconvos, buildentities }) => {
   const botVersion = caps.LEX_VERSION
   const botName = caps.LEX_PROJECT_NAME
   const botAlias = caps.LEX_PROJECT_ALIAS
+  const accessparams = await getAwsCredentials(caps)
 
   const client = botVersion === 'V1'
     ? new AWS.LexModelBuildingService({
       apiVersion: '2017-04-19',
       region: caps.LEX_REGION,
-      accessKeyId: caps.LEX_ACCESS_KEY_ID,
-      secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+      ...accessparams
     })
     : new AWS.LexModelsV2({
       apiVersion: '2020-08-07',
       region: caps.LEX_REGION,
-      accessKeyId: caps.LEX_ACCESS_KEY_ID,
-      secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
+      ...accessparams
     })
   if (botVersion === 'V2' && !caps.LEX_PROJECT_VERSION) {
     const aliasResponse = await client.describeBotAlias({ botId: botName, botAliasId: botAlias }).promise()
