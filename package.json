@@ -1,6 +1,6 @@
 {
   "name": "botium-connector-lex",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Botium Connector for Amazon Lex",
   "type": "module",
   "main": "dist/botium-connector-lex-cjs.cjs",
