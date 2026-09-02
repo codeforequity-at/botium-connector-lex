@@ -5,6 +5,7 @@ import { importHandler, importArgs } from './src/import.js'
 import { exportHandler, exportArgs } from './src/export.js'
 import { paginatedCall } from './src/slottypes.js'
 import { getCrossAccountCredentials } from './src/auth.js'
+import { isIamKeysAuth, isIamRoleAuth, queryBots, queryBotAliases } from './src/metadata.js'
 
 export default {
   PluginVersion: 1,
@@ -109,163 +110,21 @@ export default {
         label: 'Name of the Lex Bot (project name)',
         type: 'query',
         required: true,
-        query: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_VERSION === 'V1') {
-            const client = new AWS.LexModelBuildingService({
-              apiVersion: '2017-04-19',
-              region: caps.LEX_REGION,
-              accessKeyId: caps.LEX_ACCESS_KEY_ID,
-              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
-            })
-            const bots = await paginatedCall(client.getBots.bind(client), r => r.bots)
-            if (bots && bots.length > 0) {
-              return bots.map(b => ({
-                key: b.name,
-                name: b.name,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_VERSION === 'V2') {
-            const client = new AWS.LexModelsV2({
-              apiVersion: '2020-08-07',
-              region: caps.LEX_REGION,
-              accessKeyId: caps.LEX_ACCESS_KEY_ID,
-              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
-            })
-            const botSummaries = await paginatedCall(client.listBots.bind(client), r => r.botSummaries)
-            if (botSummaries && botSummaries.length > 0) {
-              return botSummaries.map(b => ({
-                key: b.botId,
-                name: b.botName,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_VERSION === 'V1') {
-            const accessparams = await getCrossAccountCredentials({
-              roleArn: caps.LEX_ROLE_ARN,
-              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
-            })
-            const client = new AWS.LexModelBuildingService({
-              apiVersion: '2017-04-19',
-              region: caps.LEX_REGION,
-              ...accessparams
-            })
-            const bots = await paginatedCall(client.getBots.bind(client), r => r.bots)
-            if (bots && bots.length > 0) {
-              return bots.map(b => ({
-                key: b.name,
-                name: b.name,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_VERSION === 'V2') {
-            const accessparams = await getCrossAccountCredentials({
-              roleArn: caps.LEX_ROLE_ARN,
-              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
-            })
-            const client = new AWS.LexModelsV2({
-              apiVersion: '2020-08-07',
-              region: caps.LEX_REGION,
-              ...accessparams
-            })
-            const botSummaries = await paginatedCall(client.listBots.bind(client), r => r.botSummaries)
-            if (botSummaries && botSummaries.length > 0) {
-              return botSummaries.map(b => ({
-                key: b.botId,
-                name: b.botName,
-                description: b.description
-              }))
-            }
-          }
-        }
+        query: queryBots
       },
       {
         name: 'LEX_PROJECT_ALIAS',
         label: 'Alias of the Lex Bot (see publishing)',
         type: 'query',
         required: true,
-        query: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V1') {
-            const client = new AWS.LexModelBuildingService({
-              apiVersion: '2017-04-19',
-              region: caps.LEX_REGION,
-              accessKeyId: caps.LEX_ACCESS_KEY_ID,
-              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
-            })
-            const botAliases = await paginatedCall(client.getBotAliases.bind(client), r => r.BotAliases, { botName: caps.LEX_PROJECT_NAME })
-            if (botAliases && botAliases.length > 0) {
-              return botAliases.map(b => ({
-                key: b.name,
-                name: b.name,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
-            const client = new AWS.LexModelsV2({
-              apiVersion: '2020-08-07',
-              region: caps.LEX_REGION,
-              accessKeyId: caps.LEX_ACCESS_KEY_ID,
-              secretAccessKey: caps.LEX_SECRET_ACCESS_KEY
-            })
-            const botAliasSummaries = await paginatedCall(client.listBotAliases.bind(client), r => r.botAliasSummaries, { botId: caps.LEX_PROJECT_NAME })
-            if (botAliasSummaries && botAliasSummaries.length > 0) {
-              return botAliasSummaries.map(b => ({
-                key: b.botAliasId,
-                name: b.botAliasName,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V1') {
-            const accessparams = await getCrossAccountCredentials({
-              roleArn: caps.LEX_ROLE_ARN,
-              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
-            })
-            const client = new AWS.LexModelBuildingService({
-              apiVersion: '2017-04-19',
-              region: caps.LEX_REGION,
-              ...accessparams
-            })
-            const botAliases = await paginatedCall(client.getBotAliases.bind(client), r => r.BotAliases, { botName: caps.LEX_PROJECT_NAME })
-            if (botAliases && botAliases.length > 0) {
-              return botAliases.map(b => ({
-                key: b.name,
-                name: b.name,
-                description: b.description
-              }))
-            }
-          }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
-            const accessparams = await getCrossAccountCredentials({
-              roleArn: caps.LEX_ROLE_ARN,
-              roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
-            })
-            const client = new AWS.LexModelsV2({
-              apiVersion: '2020-08-07',
-              region: caps.LEX_REGION,
-              ...accessparams
-            })
-            const botAliasSummaries = await paginatedCall(client.listBotAliases.bind(client), r => r.botAliasSummaries, { botId: caps.LEX_PROJECT_NAME })
-            if (botAliasSummaries && botAliasSummaries.length > 0) {
-              return botAliasSummaries.map(b => ({
-                key: b.botAliasId,
-                name: b.botAliasName,
-                description: b.description
-              }))
-            }
-          }
-        }
+        query: queryBotAliases
       },
       {
         name: 'LEX_LOCALE',
         label: 'Locale of the Lex Bot (V2 only)',
         type: 'query',
         query: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
+          if (caps && isIamKeysAuth(caps) && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
             const client = new AWS.LexModelsV2({
               apiVersion: '2020-08-07',
               region: caps.LEX_REGION,
@@ -284,7 +143,7 @@ export default {
               }
             }
           }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
+          if (caps && isIamRoleAuth(caps) && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V2') {
             const accessparams = await getCrossAccountCredentials({
               roleArn: caps.LEX_ROLE_ARN,
               roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
@@ -344,7 +203,7 @@ export default {
         name: 'GetAgentMetaData',
         description: 'GetAgentMetaData',
         run: async (caps) => {
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
+          if (caps && isIamKeysAuth(caps) && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
             const client = new AWS.LexModelBuildingService({
               apiVersion: '2017-04-19',
               region: caps.LEX_REGION,
@@ -358,7 +217,7 @@ export default {
               metadata: bot
             }
           }
-          if (caps && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+          if (caps && isIamKeysAuth(caps) && caps.LEX_ACCESS_KEY_ID && caps.LEX_SECRET_ACCESS_KEY && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
             const client = new AWS.LexModelsV2({
               apiVersion: '2020-08-07',
               region: caps.LEX_REGION,
@@ -372,7 +231,7 @@ export default {
               metadata: botResponse
             }
           }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
+          if (caps && isIamRoleAuth(caps) && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_PROJECT_ALIAS && caps.LEX_VERSION === 'V1') {
             const accessparams = await getCrossAccountCredentials({
               roleArn: caps.LEX_ROLE_ARN,
               roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
@@ -389,7 +248,7 @@ export default {
               metadata: bot
             }
           }
-          if (caps && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
+          if (caps && isIamRoleAuth(caps) && caps.LEX_ROLE_ARN && caps.LEX_ROLE_EXTERNAL_ID && caps.LEX_REGION && caps.LEX_PROJECT_NAME && caps.LEX_VERSION === 'V2') {
             const accessparams = await getCrossAccountCredentials({
               roleArn: caps.LEX_ROLE_ARN,
               roleExternalId: caps.LEX_ROLE_EXTERNAL_ID
